@@ -4,6 +4,6 @@
 // Never put the secret / service_role key here.
 // While these are empty the site works as before, just without accounts and reviews.
 window.CE_CONFIG = {
-  supabaseUrl: "",      // e.g. "https://abcdefgh.supabase.co"
-  supabaseAnonKey: "",  // starts with "sb_publishable_" or "eyJ"
+  supabaseUrl: "https://gllfnfqsxwcfkskvvgxe.supabase.co",
+  supabaseAnonKey: "sb_publishable_SZYacTk4BAXrBv_3WnVqmA_Y5MTvUyI",
 };

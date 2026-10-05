@@ -46,6 +46,12 @@ create policy "Write own review" on public.reviews for insert to authenticated w
 create policy "Edit own review" on public.reviews for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "Delete own review" on public.reviews for delete to authenticated using (user_id = auth.uid());
 
+-- Explicit API access (row-level security above still decides which rows)
+grant usage on schema public to anon, authenticated;
+grant select on public.profiles to anon, authenticated;
+grant select on public.reviews to anon, authenticated;
+grant insert, update, delete on public.reviews to authenticated;
+
 -- Average rating + count per restaurant, for the list
 create or replace view public.restaurant_stats with (security_invoker = true) as
   select restaurant_id, round(avg(rating)::numeric, 1)::float as avg_rating, count(*)::int as review_count
