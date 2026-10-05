@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Searchable guide to 44 Cambridge, MA restaurants.">
+<meta name="description" content="Searchable guide to restaurants in Cambridge, Fenway and Back Bay.">
 <title>Cambridge Eats</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,9 +71,16 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .reset { font: inherit; font-size: 13px; background: none; border: 0; color: var(--brick); cursor: pointer; text-decoration: underline; padding: 4px; }
 
 .main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: start; }
-.list-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 8px; }
 .result-line { font-size: 13px; color: var(--muted); margin: 0; font-variant-numeric: tabular-nums; flex: 1 1 180px; }
-#sort button { font-size: 12px; padding: 6px 10px; }
+#sort button, #per button { font-size: 12px; padding: 6px 10px; }
+.list-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.list-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 8px; }
+.per { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; padding-block: 16px 4px; font-variant-numeric: tabular-nums; }
+.pager button { font: inherit; font-size: 13px; min-width: 36px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.pager button[aria-current="page"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.pager button:disabled { opacity: .4; cursor: default; }
+.pager .gap { color: var(--muted); padding: 0 2px; }
 .list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; padding: 13px 10px; border-bottom: 1px solid var(--line); cursor: default; border-radius: 6px; transition: background .15s; }
 .item.hot { background: var(--brick-soft); }
@@ -83,6 +90,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .item .addr { font-size: 13px; grid-column: 1; }
 .item .addr a { color: var(--river-ink); text-decoration: none; }
 .item .addr a:hover { text-decoration: underline; }
+.item .addr a.src { color: var(--muted); font-size: 12px; }
 .price { font-family: var(--font-mono); font-size: 14px; letter-spacing: .04em; grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap; }
 .price i { font-style: normal; color: var(--dot-dim); }
 .dist { font-family: var(--font-mono); font-size: 12px; color: var(--river-ink); grid-column: 2; grid-row: 2; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -116,9 +124,9 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
 <div class="wrap">
   <header>
     <div>
-      <p class="eyebrow">Boston Lifesaver · Cambridge, MA</p>
+      <p class="eyebrow">Boston Lifesaver · Cambridge &amp; Boston</p>
       <h1>Cambridge Eats</h1>
-      <p class="lede">44 restaurants across Harvard, Central, Kendall, Inman, Porter and beyond. Search, filter by price, sort by what's nearest to you, or tap a pin on the map.</p>
+      <p class="lede"><span id="total"></span> restaurants across Kendall, Central, Fenway, Back Bay, Harvard, Inman and beyond. Search, filter by price, sort by what's nearest to you, or tap a pin on the map.</p>
     </div>
     <div class="stats" id="stats"></div>
   </header>
@@ -143,13 +151,21 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
     <div>
       <div class="list-head">
         <p class="result-line" aria-live="polite"><span id="count"></span> <span class="geo-msg" id="geo-msg"></span></p>
-        <div class="price-group" role="group" aria-label="Sort" id="sort">
-          <button type="button" aria-pressed="false" data-s="near">Nearest</button>
-          <button type="button" aria-pressed="false" data-s="price-asc" aria-label="Price, low to high">$ → $$$$</button>
-          <button type="button" aria-pressed="true" data-s="price-desc" aria-label="Price, high to low">$$$$ → $</button>
+        <div class="list-tools">
+          <div class="price-group" role="group" aria-label="Sort" id="sort">
+            <button type="button" aria-pressed="false" data-s="near">Nearest</button>
+            <button type="button" aria-pressed="false" data-s="price-asc" aria-label="Price, low to high">$ → $$$$</button>
+            <button type="button" aria-pressed="true" data-s="price-desc" aria-label="Price, high to low">$$$$ → $</button>
+          </div>
+          <div class="per"><span id="per-label">Show</span>
+            <div class="price-group" role="group" aria-labelledby="per-label" id="per">
+              <button type="button" data-n="10" aria-pressed="true">10</button><button type="button" data-n="20" aria-pressed="false">20</button>
+            </div>
+          </div>
         </div>
       </div>
       <ul class="list" id="list"></ul>
+      <nav class="pager" id="pager" aria-label="Pages"></nav>
     </div>
     <div class="map-wrap">
       <div class="map-card">
@@ -160,7 +176,7 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
   </div>
 
   <footer>
-    <span>Data: <code>data/cambridge_restaurants.json</code></span>
+    <span>Data: <code>data/restaurants.json</code> · new listings checked against public sources, Oct 2026</span>
     <span>Last updated October 5, 2026</span>
     <span>Price: $ under $15 · $$ $15–30 · $$$ $30–60 · $$$$ $60+ per person (typical guide ranges)</span>
   </footer>
@@ -169,51 +185,109 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 const R = [
-[1,"Harvest","Harvard Square","Contemporary American","44 Brattle St, Cambridge, MA 02138","$$$$",42.3741,-71.1207],
-[2,"Alden & Harlow","Harvard Square","Contemporary American","40 Brattle St, Cambridge, MA 02138","$$$",42.3737,-71.1199],
-[3,"Bar Enza","Harvard Square","Italian","1 Bennett St (The Charles Hotel), Cambridge, MA 02138","$$$",42.3721,-71.1222],
-[4,"Cafe Sushi","Harvard Square","Japanese / Sushi","1105 Massachusetts Ave, Cambridge, MA 02138","$$$",42.3709,-71.1137],
-[5,"Mr. Bartley's Burger Cottage","Harvard Square","Burgers","1246 Massachusetts Ave, Cambridge, MA 02138","$$",42.3726,-71.1157],
-[6,"The Hourly Oyster House","Harvard Square","Seafood","15 Dunster St, Cambridge, MA 02138","$$$",42.3729,-71.1183],
-[7,"Felipe's Taqueria","Harvard Square","Mexican","83 Mount Auburn St, Cambridge, MA 02138","$",42.3722,-71.1172],
-[8,"Pinocchio's Pizza & Subs","Harvard Square","Pizza","74 Winthrop St, Cambridge, MA 02138","$",42.3716,-71.1192],
-[9,"Russell House Tavern","Harvard Square","American / Gastropub","14 John F Kennedy St, Cambridge, MA 02138","$$$",42.3732,-71.1194],
-[10,"Grendel's Den","Harvard Square","Pub","89 Winthrop St, Cambridge, MA 02138","$$",42.3712,-71.1203],
-[11,"The Helmand","East Cambridge","Afghan","143 First St, Cambridge, MA 02142","$$$",42.3681,-71.0786],
-[12,"Oleana","Inman Square","Mediterranean","134 Hampshire St, Cambridge, MA 02139","$$$$",42.3711,-71.0990],
-[13,"Puritan & Company","Inman Square","Contemporary American","1166 Cambridge St, Cambridge, MA 02139","$$$",42.3740,-71.1006],
-[14,"Puritan Oyster Bar","Inman Square","Seafood","1166 Cambridge St, Cambridge, MA 02139","$$$",42.3743,-71.0999],
-[15,"Punjabi Dhaba","Inman Square","Indian","225 Hampshire St, Cambridge, MA 02139","$",42.3727,-71.1018],
-[16,"Ole Mexican Grill","Inman Square","Mexican","11 Springfield St, Cambridge, MA 02139","$$",42.3733,-71.1028],
-[17,"Bisq","Inman Square","Small plates / Wine bar","1071 Cambridge St, Cambridge, MA 02139","$$$",42.3733,-71.0972],
-[18,"Giulia","Porter Square","Italian","1682 Massachusetts Ave, Cambridge, MA 02138","$$$$",42.3802,-71.1196],
-[19,"Moeca","Inman Square","Seafood / Italian","1336 Cambridge St, Cambridge, MA 02139","$$$$",42.3748,-71.1045],
-[20,"Sofra Bakery & Cafe","West Cambridge","Middle Eastern bakery","1 Belmont St, Cambridge, MA 02138","$$",42.3786,-71.1388],
-[21,"Pagu","Central Square","Japanese / Spanish","310 Massachusetts Ave, Cambridge, MA 02139","$$$",42.3614,-71.0982],
-[22,"Darling","Central Square","Chinese / Dim sum","464 Massachusetts Ave, Cambridge, MA 02139","$$$",42.3637,-71.1012],
-[23,"Mamaleh's Delicatessen","Kendall Square","Jewish deli","15 Hampshire St, Cambridge, MA 02139","$$",42.3640,-71.0935],
-[24,"Life Alive","Central Square","Vegetarian","765 Massachusetts Ave, Cambridge, MA 02139","$$",42.3668,-71.1064],
-[25,"Shalimar of India","Central Square","Indian","546 Massachusetts Ave, Cambridge, MA 02139","$$",42.3651,-71.1030],
-[26,"Brookline Lunch","Central Square","Breakfast / Middle Eastern","9 Brookline St, Cambridge, MA 02139","$",42.3638,-71.1037],
-[27,"Yume Wo Katare","Porter Square","Ramen","1923 Massachusetts Ave, Cambridge, MA 02140","$$",42.3893,-71.1196],
-[28,"Roxy's Grilled Cheese & Burgers","Central Square","Burgers / Sandwiches","485 Massachusetts Ave, Cambridge, MA 02139","$",42.3643,-71.1018],
-[29,"The Mad Monkfish","Central Square","Sushi / Asian fusion","524 Massachusetts Ave, Cambridge, MA 02139","$$$",42.3648,-71.1026],
-[30,"Pammy's","Mid-Cambridge","Italian","928 Massachusetts Ave, Cambridge, MA 02139","$$$$",42.3693,-71.1100],
-[31,"Area Four","Kendall Square","Pizza","500 Technology Square, Cambridge, MA 02139","$$",42.3630,-71.0918],
-[32,"Alice & Monarch","Kendall Square","Mediterranean-Italian / Cocktail & dessert lounge","238 Main St, Cambridge, MA 02142","$$$",42.3624,-71.0855],
-[33,"Fallow Kin","Central Square","Farm-to-table American","853 Main St, Cambridge, MA 02139","$$$",42.3628,-71.0995],
-[34,"Geppetto","East Cambridge","Italian","100 Binney St, Cambridge, MA 02142","$$$$",42.3664,-71.0838],
-[35,"State Park","Kendall Square","Bar food / American","1 Kendall Square, Cambridge, MA 02139","$$",42.3666,-71.0905],
-[36,"Judy's Bay","The Port","Japanese izakaya","279 Broadway, Cambridge, MA 02139","$$$",42.3667,-71.0965],
-[37,"Alive & Kicking Lobsters","Cambridgeport","Seafood / Lobster rolls","269 Putnam Ave, Cambridge, MA 02139","$$",42.3598,-71.1082],
-[38,"New Deal Fish Market","East Cambridge","Seafood / Sushi","622 Cambridge St, Cambridge, MA 02141","$$",42.3718,-71.0870],
-[39,"The Coast Cafe","Riverside","Southern / Soul food","233 River St, Cambridge, MA 02139","$$",42.3628,-71.1112],
-[40,"The Friendly Toast","Kendall Square","Breakfast / American","1 Kendall Square, Cambridge, MA 02139","$$",42.3662,-71.0910],
-[41,"Muqueca","Inman Square","Brazilian","1008 Cambridge St, Cambridge, MA 02141","$$",42.3727,-71.0955],
-[42,"Midwest Grill","Inman Square","Brazilian churrascaria","1124 Cambridge St, Cambridge, MA 02139","$$$",42.3737,-71.0990],
-[43,"Shy Bird","Kendall Square","Rotisserie / Cafe","390 Third St, Cambridge, MA 02142","$$",42.3644,-71.0812],
-[44,"Café Luna","Kendall Square","Brunch / American","350 Third St, Cambridge, MA 02142","$$",42.3633,-71.0818]
-].map(([id,name,hood,cuisine,address,price,lat,lng]) => ({id,name,hood,cuisine,address,price,lat,lng}));
+[1, "Harvest", "Harvard Square", "Contemporary American", "44 Brattle St, Cambridge, MA 02138", "$$$$", 42.3741, -71.1207, ""],
+[2, "Alden & Harlow", "Harvard Square", "Contemporary American", "40 Brattle St, Cambridge, MA 02138", "$$$", 42.3737, -71.1199, ""],
+[3, "Bar Enza", "Harvard Square", "Italian", "1 Bennett St (The Charles Hotel), Cambridge, MA 02138", "$$$", 42.3721, -71.1222, ""],
+[4, "Cafe Sushi", "Harvard Square", "Japanese / Sushi", "1105 Massachusetts Ave, Cambridge, MA 02138", "$$$", 42.3709, -71.1137, ""],
+[5, "Mr. Bartley's Burger Cottage", "Harvard Square", "Burgers", "1246 Massachusetts Ave, Cambridge, MA 02138", "$$", 42.3726, -71.1157, ""],
+[6, "The Hourly Oyster House", "Harvard Square", "Seafood", "15 Dunster St, Cambridge, MA 02138", "$$$", 42.3729, -71.1183, ""],
+[7, "Felipe's Taqueria", "Harvard Square", "Mexican", "83 Mount Auburn St, Cambridge, MA 02138", "$", 42.3722, -71.1172, ""],
+[8, "Pinocchio's Pizza & Subs", "Harvard Square", "Pizza", "74 Winthrop St, Cambridge, MA 02138", "$", 42.3716, -71.1192, ""],
+[9, "Russell House Tavern", "Harvard Square", "American / Gastropub", "14 John F Kennedy St, Cambridge, MA 02138", "$$$", 42.3732, -71.1194, ""],
+[10, "Grendel's Den", "Harvard Square", "Pub", "89 Winthrop St, Cambridge, MA 02138", "$$", 42.3712, -71.1203, ""],
+[11, "The Helmand", "East Cambridge", "Afghan", "143 First St, Cambridge, MA 02142", "$$$", 42.3681, -71.0786, ""],
+[12, "Oleana", "Inman Square", "Mediterranean", "134 Hampshire St, Cambridge, MA 02139", "$$$$", 42.3711, -71.099, ""],
+[13, "Puritan & Company", "Inman Square", "Contemporary American", "1166 Cambridge St, Cambridge, MA 02139", "$$$", 42.374, -71.1006, ""],
+[14, "Puritan Oyster Bar", "Inman Square", "Seafood", "1166 Cambridge St, Cambridge, MA 02139", "$$$", 42.3743, -71.0999, ""],
+[15, "Punjabi Dhaba", "Inman Square", "Indian", "225 Hampshire St, Cambridge, MA 02139", "$", 42.3727, -71.1018, ""],
+[16, "Ole Mexican Grill", "Inman Square", "Mexican", "11 Springfield St, Cambridge, MA 02139", "$$", 42.3733, -71.1028, ""],
+[17, "Bisq", "Inman Square", "Small plates / Wine bar", "1071 Cambridge St, Cambridge, MA 02139", "$$$", 42.3733, -71.0972, ""],
+[18, "Giulia", "Porter Square", "Italian", "1682 Massachusetts Ave, Cambridge, MA 02138", "$$$$", 42.3802, -71.1196, ""],
+[19, "Moeca", "Inman Square", "Seafood / Italian", "1336 Cambridge St, Cambridge, MA 02139", "$$$$", 42.3748, -71.1045, ""],
+[20, "Sofra Bakery & Cafe", "West Cambridge", "Middle Eastern bakery", "1 Belmont St, Cambridge, MA 02138", "$$", 42.3786, -71.1388, ""],
+[21, "Pagu", "Central Square", "Japanese / Spanish", "310 Massachusetts Ave, Cambridge, MA 02139", "$$$", 42.3614, -71.0982, ""],
+[22, "Darling", "Central Square", "Chinese / Dim sum", "464 Massachusetts Ave, Cambridge, MA 02139", "$$$", 42.3637, -71.1012, ""],
+[23, "Mamaleh's Delicatessen", "Kendall Square", "Jewish deli", "15 Hampshire St, Cambridge, MA 02139", "$$", 42.364, -71.0935, ""],
+[24, "Life Alive", "Central Square", "Vegetarian", "765 Massachusetts Ave, Cambridge, MA 02139", "$$", 42.3668, -71.1064, ""],
+[25, "Shalimar of India", "Central Square", "Indian", "546 Massachusetts Ave, Cambridge, MA 02139", "$$", 42.3651, -71.103, ""],
+[26, "Brookline Lunch", "Central Square", "Breakfast / Middle Eastern", "9 Brookline St, Cambridge, MA 02139", "$", 42.3638, -71.1037, ""],
+[27, "Yume Wo Katare", "Porter Square", "Ramen", "1923 Massachusetts Ave, Cambridge, MA 02140", "$$", 42.3893, -71.1196, ""],
+[28, "Roxy's Grilled Cheese & Burgers", "Central Square", "Burgers / Sandwiches", "485 Massachusetts Ave, Cambridge, MA 02139", "$", 42.3643, -71.1018, ""],
+[29, "The Mad Monkfish", "Central Square", "Sushi / Asian fusion", "524 Massachusetts Ave, Cambridge, MA 02139", "$$$", 42.3648, -71.1026, ""],
+[30, "Pammy's", "Mid-Cambridge", "Italian", "928 Massachusetts Ave, Cambridge, MA 02139", "$$$$", 42.3693, -71.11, ""],
+[31, "Area Four", "Kendall Square", "Pizza", "500 Technology Square, Cambridge, MA 02139", "$$", 42.363, -71.0918, ""],
+[32, "Alice & Monarch", "Kendall Square", "Mediterranean-Italian / Cocktail & dessert lounge", "238 Main St, Cambridge, MA 02142", "$$$", 42.3624, -71.0855, ""],
+[33, "Fallow Kin", "Central Square", "Farm-to-table American", "853 Main St, Cambridge, MA 02139", "$$$", 42.3628, -71.0995, ""],
+[34, "Geppetto", "East Cambridge", "Italian", "100 Binney St, Cambridge, MA 02142", "$$$$", 42.3664, -71.0838, ""],
+[35, "State Park", "Kendall Square", "Bar food / American", "1 Kendall Square, Cambridge, MA 02139", "$$", 42.3666, -71.0905, ""],
+[36, "Judy's Bay", "The Port", "Japanese izakaya", "279 Broadway, Cambridge, MA 02139", "$$$", 42.3667, -71.0965, ""],
+[37, "Alive & Kicking Lobsters", "Cambridgeport", "Seafood / Lobster rolls", "269 Putnam Ave, Cambridge, MA 02139", "$$", 42.3598, -71.1082, ""],
+[38, "New Deal Fish Market", "East Cambridge", "Seafood / Sushi", "622 Cambridge St, Cambridge, MA 02141", "$$", 42.3718, -71.087, ""],
+[39, "The Coast Cafe", "Riverside", "Southern / Soul food", "233 River St, Cambridge, MA 02139", "$$", 42.3628, -71.1112, ""],
+[40, "The Friendly Toast", "Kendall Square", "Breakfast / American", "1 Kendall Square, Cambridge, MA 02139", "$$", 42.3662, -71.091, ""],
+[41, "Muqueca", "Inman Square", "Brazilian", "1008 Cambridge St, Cambridge, MA 02141", "$$", 42.3727, -71.0955, ""],
+[42, "Midwest Grill", "Inman Square", "Brazilian churrascaria", "1124 Cambridge St, Cambridge, MA 02139", "$$$", 42.3737, -71.099, ""],
+[43, "Shy Bird", "Kendall Square", "Rotisserie / Cafe", "390 Third St, Cambridge, MA 02142", "$$", 42.3644, -71.0812, ""],
+[44, "Café Luna", "Kendall Square", "Brunch / American", "350 Third St, Cambridge, MA 02142", "$$", 42.3633, -71.0818, ""],
+[45, "Eventide Fenway", "Fenway", "Seafood / Oyster Bar", "1321 Boylston St, Boston, MA 02215", "$$", 42.3449, -71.0981, "https://www.theinfatuation.com/boston/guides/where-to-eat-and-drink-in-fenwaykenmore-square"],
+[46, "Hojoko", "Fenway", "Japanese / Izakaya", "1271 Boylston St, Boston, MA 02215", "$$$", 42.3462, -71.0948, "https://www.hojokoboston.com/"],
+[47, "Basho Japanese Brasserie", "Fenway", "Japanese / Sushi", "1338 Boylston St, Boston, MA 02215", "$$$", 42.3443, -71.0986, "https://www.theinfatuation.com/boston/guides/where-to-eat-and-drink-in-fenwaykenmore-square"],
+[48, "The Citizen Public House", "Fenway", "Gastropub", "1310 Boylston St, Boston, MA 02215", "$$$", 42.3446, -71.0974, "https://www.bostonmagazine.com/restaurants/best-restaurants-fenway-neighborhood/"],
+[49, "Mida Fenway", "Fenway", "Italian", "1391 Boylston St, Boston, MA 02215", "$$$", 42.3442, -71.1005, "https://www.bostonmagazine.com/restaurants/best-restaurants-fenway-neighborhood/"],
+[50, "Joe's Pizza", "Fenway", "Pizza", "1359 Boylston St, Boston, MA 02215", "$", 42.3446, -71.0993, "https://www.joespizzanyc.com/locations"],
+[51, "Naya", "Fenway", "Lebanese / Fast casual", "1375 Boylston St, Boston, MA 02215", "$", 42.3444, -71.0999, "https://www.boston.com/food/food-news/2026/06/25/best-restaurant-openings-june-25-2026/"],
+[52, "KChickin", "Fenway", "Korean fried chicken / Sushi", "86 Peterborough St, Boston, MA 02215", "$$", 42.3428, -71.0985, "https://www.kchickin.com/"],
+[53, "Wow Tikka", "Fenway", "Indian / Fast casual", "84 Peterborough St, Boston, MA 02215", "$", 42.3428, -71.0983, "https://www.bostonmagazine.com/restaurants/best-restaurants-fenway-neighborhood/"],
+[54, "Spring Shanghai Pan-Fried Buns", "Fenway", "Chinese / Dumplings", "90 Peterborough St, Boston, MA 02215", "$", 42.3427, -71.0989, "https://www.bostonmagazine.com/restaurants/best-restaurants-fenway-neighborhood/"],
+[55, "Rod Thai Family Taste", "Fenway", "Thai", "94 Peterborough St, Boston, MA 02215", "$", 42.3427, -71.0992, "https://www.bostonmagazine.com/restaurants/best-restaurants-fenway-neighborhood/"],
+[56, "Fenway Grill & Bar", "Fenway", "Mediterranean / Turkish", "100 Peterborough St, Boston, MA 02215", "$$", 42.3426, -71.0996, "https://www.nbcboston.com/entertainment/food-drink-nightlife/new-restaurant-opens-in-bostons-fenway-neighborhood/3926256/"],
+[57, "Loco Taqueria & Oyster Bar", "Fenway", "Mexican / Seafood", "61 Brookline Ave, Boston, MA 02215", "$$", 42.3471, -71.0985, "https://www.bostonchefs.com/restaurant/loco-taqueria-oyster-bar-fenway/"],
+[58, "Shy Bird Fenway", "Fenway", "Rotisserie / American", "201 Brookline Ave, Boston, MA 02215", "$$", 42.344, -71.101, "https://opentable.com/r/shy-bird-fenway-boston"],
+[59, "Saloniki", "Fenway", "Greek", "4 Kilmarnock St, Boston, MA 02215", "$", 42.3436, -71.0976, "https://www.bostonmagazine.com/restaurants/best-restaurants-fenway-neighborhood/"],
+[60, "Sufra Mediterranean", "Fenway", "Mediterranean / Halal", "52 Queensberry St, Boston, MA 02215", "$", 42.3427, -71.0973, "https://www.bostonmagazine.com/restaurants/best-restaurants-fenway-neighborhood/"],
+[61, "Tasty Burger", "Fenway", "Burgers / American", "86 Van Ness St, Boston, MA 02215", "$", 42.345, -71.0962, "https://www.timeout.com/boston/restaurants/tasty-burger"],
+[62, "Bleacher Bar", "Fenway", "American / Sports bar", "82A Lansdowne St, Boston, MA 02215", "$$", 42.347, -71.0965, "https://www.bleacherbarboston.com/"],
+[63, "India Quality", "Fenway", "Indian", "484 Commonwealth Ave, Boston, MA 02215", "$$", 42.3487, -71.0951, "https://www.indiaquality.com/"],
+[64, "Don't Tell Aunty", "Fenway", "Indian / Gastropub", "1080 Boylston St, Boston, MA 02115", "$$$", 42.347, -71.088, "https://www.donttellaunty.com/"],
+[65, "Saltie Girl", "Back Bay", "Seafood", "279 Dartmouth St, Boston, MA 02116", "$$$", 42.35, -71.0777, "https://www.saltiegirl.com/"],
+[66, "Parish Cafe & Bar", "Back Bay", "American / Sandwiches", "361 Boylston St, Boston, MA 02116", "$$", 42.3518, -71.0718, "https://toast.app/r/parish-cafe-361-boylston-street"],
+[67, "Trident Booksellers & Cafe", "Back Bay", "Cafe / Brunch", "338 Newbury St, Boston, MA 02115", "$$", 42.3486, -71.0863, "https://www.tridentbookscafe.com/"],
+[68, "Krasi", "Back Bay", "Greek", "48 Gloucester St, Boston, MA 02115", "$$$", 42.3489, -71.0843, "https://www.krasiboston.com/"],
+[69, "Greco", "Back Bay", "Greek / Gyros", "225 Newbury St, Boston, MA 02116", "$", 42.3501, -71.0817, "https://grecotrulygreek.com/locations/back-bay/"],
+[70, "Puro Ceviche Bar", "Back Bay", "Latin American / Ceviche", "264 Newbury St, Boston, MA 02116", "$$", 42.3492, -71.0831, "https://www.opentable.com/r/puro-ceviche-bar-boston"],
+[71, "Pho Basil", "Back Bay", "Vietnamese / Thai", "177 Massachusetts Ave, Boston, MA 02115", "$$", 42.3466, -71.0874, "https://order.online/store/pho-basil-restaurant-boston-1873237"],
+[72, "Douzo", "Back Bay", "Japanese / Sushi", "131 Dartmouth St, Boston, MA 02116", "$$$", 42.3469, -71.0758, "https://www.yelp.com/biz/douzo-boston"],
+[73, "Abe & Louie's", "Back Bay", "Steakhouse", "793 Boylston St, Boston, MA 02116", "$$$$", 42.3489, -71.0817, "https://www.abeandlouies.com/"],
+[74, "Atlantic Fish Company", "Back Bay", "Seafood", "761 Boylston St, Boston, MA 02116", "$$$", 42.3492, -71.0808, "https://www.atlanticfish.com/"],
+[75, "Eataly Boston", "Back Bay", "Italian / Food hall", "800 Boylston St, Boston, MA 02199", "$$", 42.3477, -71.082, "https://www.eataly.com/us_en/stores/boston"],
+[76, "UNI", "Back Bay", "Japanese / Izakaya", "370A Commonwealth Ave, Boston, MA 02215", "$$$$", 42.3486, -71.0894, "https://www.uni-boston.com/"],
+[77, "Bistro du Midi", "Back Bay", "French", "272 Boylston St, Boston, MA 02116", "$$$", 42.3522, -71.0688, "https://www.bistrodumidi.com/"],
+[78, "Sonsie", "Back Bay", "Italian / American", "327 Newbury St, Boston, MA 02115", "$$$", 42.3484, -71.086, "https://www.sonsieboston.com/"],
+[79, "Select Oyster Bar", "Back Bay", "Seafood / Oyster bar", "50 Gloucester St, Boston, MA 02115", "$$$", 42.349, -71.0841, "https://www.selectboston.com/"],
+[80, "Shake Shack Newbury Street", "Back Bay", "Burgers", "234 Newbury St, Boston, MA 02116", "$", 42.3497, -71.0826, "https://www.universalhub.com/2026/shake-shack-gets-ok-offer-burgers-until-2-am-downtown-and-back-bay-not"],
+[81, "Rosa y Marigold", "Back Bay", "Peruvian", "400 Newbury St, Boston, MA 02115", "$$$", 42.3483, -71.088, "https://www.bostonmagazine.com/restaurants/2026/04/13/rosa-y-marigold-back-bay-peruvian-restaurant/"],
+[82, "Santouka Back Bay", "Back Bay", "Japanese / Ramen", "66 Hereford St, Boston, MA 02115", "$$", 42.3487, -71.0869, "https://www.yelp.com/biz/santouka-back-bay-boston-2"],
+[83, "Bukowski Tavern", "Back Bay", "Pub / Burgers", "50 Dalton St, Boston, MA 02115", "$$", 42.3468, -71.0848, "https://www.theinfatuation.com/boston/reviews/bukowski-tavern"],
+[84, "Lolita Back Bay", "Back Bay", "Mexican", "271 Dartmouth St, Boston, MA 02116", "$$$", 42.3502, -71.0778, "https://www.lolitamexican.com/location/lolita-back-bay/"],
+[85, "Tatte Bakery & Cafe (Boylston St)", "Back Bay", "Bakery / Cafe", "399 Boylston St, Boston, MA 02116", "$", 42.3518, -71.0719, "https://order.online/store/tatte-bakery-&-cafe-boston-267562/"],
+[86, "Mumbai Spice", "Back Bay", "Indian", "251 Massachusetts Ave, Boston, MA 02115", "$$", 42.3427, -71.0857, "https://www.yelp.com/biz/mumbai-spice-boston"],
+[87, "Sumiao Hunan Kitchen", "Kendall Square", "Chinese / Hunan", "270 Third St, Cambridge, MA 02142", "$$", 42.3646, -71.0815, "https://www.sumiaohunan.com/"],
+[88, "Eastern Edge Food Hall", "Kendall Square", "Food hall", "290 Main St, Cambridge, MA 02142", "$$", 42.3622, -71.0846, "https://www.easternedgefoodhall.com/eat-and-drink"],
+[89, "Tatte Bakery & Cafe (Third St)", "Kendall Square", "Bakery / Cafe", "318 Third St, Cambridge, MA 02142", "$$", 42.3655, -71.082, "https://directory.yext.com/en/tatte-bakery-cafe-third-st-1724913610"],
+[90, "Bakey", "Kendall Square", "Israeli bakery / Cafe", "238 Main St, Cambridge, MA 02142", "$", 42.3627, -71.0826, "https://bakeybabka.com/"],
+[91, "CAVA", "Kendall Square", "Mediterranean / Fast casual", "82 Ames St, Cambridge, MA 02142", "$", 42.3626, -71.088, "https://www.ubereats.com/store/cava-kendall-square/PHrggBsBRFOocP8kLyi5bA"],
+[92, "Fuji at Kendall", "Kendall Square", "Japanese / Sushi", "300 Third St, Cambridge, MA 02142", "$$", 42.365, -71.0818, "https://toast.app/r/fuji-at-kendall/order"],
+[93, "Amelia's Trattoria", "Kendall Square", "Italian", "111 Harvard St, Cambridge, MA 02139", "$$", 42.3653, -71.0925, "https://www.ameliastrattoria.com/"],
+[94, "Legal Sea Foods", "Kendall Square", "Seafood", "355 Main St, Cambridge, MA 02142", "$$$", 42.3628, -71.086, "https://www.legalseafoods.com/locations/cambridge-kendall-square/"],
+[95, "Veggie Galaxy", "Central Square", "Vegetarian / Diner", "450 Massachusetts Ave, Cambridge, MA 02139", "$$", 42.3634, -71.0991, "https://www.veggiegalaxy.com/"],
+[96, "Go! Go! Curry!", "Central Square", "Japanese / Curry", "581 Massachusetts Ave, Cambridge, MA 02139", "$", 42.3647, -71.101, "https://www.ubereats.com/store/go%21-go%21-curry%21-cambridge/hChPy226TL-tZlWUD5SJRA"],
+[97, "Dumpling House", "Mid-Cambridge", "Chinese / Dumplings", "950 Massachusetts Ave, Cambridge, MA 02139", "$$", 42.3696, -71.1104, "https://postmates.com/store/dumpling-house-cambridge-ma/8BvIcWdGQnCwGYOIDOJOGg"],
+[98, "Pepper Sky's Thai Sensation", "Central Square", "Thai", "20 Pearl St, Cambridge, MA 02139", "$$", 42.364, -71.102, "https://www.pepper-skys.com/"],
+[99, "Asmara Restaurant", "Central Square", "Eritrean / Ethiopian", "739 Massachusetts Ave, Cambridge, MA 02139", "$$", 42.3667, -71.1047, "https://cambridgeusa.org/listing/asmara-restaurant"],
+[100, "Koreana", "Central Square", "Korean / BBQ", "158 Prospect St, Cambridge, MA 02139", "$$$", 42.3681, -71.1, "https://cambridgeusa.org/listing/koreana-restaurant"],
+[101, "Shōjō", "Central Square", "Modern Asian", "425 Massachusetts Ave, Cambridge, MA 02139", "$$$", 42.363, -71.0985, "https://cambridgeusa.org/listing/sh-j"],
+[102, "Andala Coffee House", "Central Square", "Middle Eastern / Cafe", "286 Franklin St, Cambridge, MA 02139", "$$", 42.3626, -71.103, "https://cambridgeusa.org/listing/andala-coffee-house"]
+].map(([id,name,hood,cuisine,address,price,lat,lng,source]) => ({id,name,hood,cuisine,address,price,lat,lng,source}));
 
 // Broad cuisine groups for the dropdown (the raw cuisine text stays on each row)
 const GROUPS = [
@@ -230,7 +304,8 @@ const GROUPS = [
 ];
 const inGroup = (r, g) => GROUPS.find(x => x[0] === g)[1].test(r.cuisine);
 
-const state = { q: "", cuisine: "", prices: new Set(), hood: "", sort: "price-desc", here: null };
+const state = { q: "", cuisine: "", prices: new Set(), hood: "", page: 1, per: 10, sort: "price-desc", here: null };
+try { const p = +localStorage.getItem("perPage"); if (p === 10 || p === 20) state.per = p; } catch (e) {}
 const $ = s => document.querySelector(s);
 
 // Straight-line distance in miles (haversine)
@@ -257,6 +332,16 @@ function locate() {
       ? "Location permission was denied. Allow it in your browser to sort by distance."
       : "Couldn't get your location. Try again."),
     { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+}
+
+// Filtered + sorted list (what the pages are cut from)
+function results() {
+  const near = state.sort === "near" && state.here;
+  const out = R.filter(matches).map(r => ({ ...r, d: state.here ? miles(state.here, r) : null }));
+  if (near) out.sort((a, b) => a.d - b.d);
+  else if (state.sort === "price-asc") out.sort((a, b) => a.price.length - b.price.length || a.id - b.id);
+  else if (state.sort === "price-desc") out.sort((a, b) => b.price.length - a.price.length || a.id - b.id);
+  return out;
 }
 
 const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -358,7 +443,7 @@ function setTiles() {
 if (hasMap) {
   map = L.map("map", { scrollWheelZoom: false });
   setTiles();
-  dark.addEventListener("change", () => { setTiles(); styleZones(); render(); });
+  dark.addEventListener("change", () => { setTiles(); styleZones(); render({ keepPage: true, keepMap: true }); });
   map.fitBounds(L.latLngBounds(R.map(r => [r.lat, r.lng])), { padding: [24, 24] });
 
   const byHood = {};
@@ -393,6 +478,8 @@ function hot(id, on) {
 
 function jump(id) {
   if (!shownIds.has(id)) $("#reset").click();
+  const idx = results().findIndex(r => r.id === id);
+  if (idx >= 0 && Math.floor(idx / state.per) + 1 !== state.page) { state.page = Math.floor(idx / state.per) + 1; render({ keepPage: true, keepMap: true }); }
   const li = document.querySelector(`.item[data-id="${id}"]`);
   if (li) { li.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }); hot(id, true); setTimeout(() => hot(id, false), 1600); }
 }
@@ -407,13 +494,28 @@ function showYou() {
   youMarker.bringToFront();
 }
 
-function render() {
-  const near = state.sort === "near" && state.here;
-  const shown = R.filter(matches).map(r => ({ ...r, d: state.here ? miles(state.here, r) : null }));
-  if (near) shown.sort((a, b) => a.d - b.d);
-  else if (state.sort === "price-asc") shown.sort((a, b) => a.price.length - b.price.length || a.id - b.id);
-  else if (state.sort === "price-desc") shown.sort((a, b) => b.price.length - a.price.length || a.id - b.id);
-  $("#count").textContent = (shown.length === R.length ? `Showing all ${R.length} restaurants` : `Showing ${shown.length} of ${R.length} restaurants`) + (near ? " · nearest first" : "");
+function pageList(cur, total) {
+  const set = new Set([1, total, cur - 1, cur, cur + 1].filter(n => n >= 1 && n <= total));
+  const nums = [...set].sort((a, b) => a - b), out = [];
+  nums.forEach((n, i) => { if (i && n - nums[i - 1] > 1) out.push(0); out.push(n); });
+  return out;
+}
+function renderPager(total) {
+  const pages = Math.max(1, Math.ceil(total / state.per)), cur = state.page;
+  if (pages <= 1) { $("#pager").innerHTML = ""; return; }
+  $("#pager").innerHTML = `<button type="button" data-go="${cur - 1}" ${cur === 1 ? "disabled" : ""} aria-label="Previous page">‹ Prev</button>` +
+    pageList(cur, pages).map(n => n ? `<button type="button" data-go="${n}" ${n === cur ? 'aria-current="page"' : ""}>${n}</button>` : `<span class="gap">…</span>`).join("") +
+    `<button type="button" data-go="${cur + 1}" ${cur === pages ? "disabled" : ""} aria-label="Next page">Next ›</button>`;
+}
+function render(opts = {}) {
+  const all = results(), near = state.sort === "near" && state.here;
+  if (!opts.keepPage) state.page = 1;
+  const pages = Math.max(1, Math.ceil(all.length / state.per));
+  state.page = Math.min(Math.max(1, state.page), pages);
+  const start = (state.page - 1) * state.per, shown = all.slice(start, start + state.per);
+  $("#count").textContent = all.length ? `${start + 1}–${start + shown.length} of ${all.length}${all.length < R.length ? ` matching (${R.length} total)` : " restaurants"}${near ? " · nearest first" : ""}` : `0 of ${R.length} restaurants`;
+  document.querySelectorAll("#per button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.n === state.per));
+  renderPager(all.length);
   $("#list").innerHTML = shown.length ? shown.map(r => {
     const maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(r.name + ", " + r.address);
     return `<li class="item" data-id="${r.id}">
@@ -421,18 +523,19 @@ function render() {
       <span class="price" aria-label="Price ${r.price.length} of 4">${r.price}<i>${"$".repeat(4 - r.price.length)}</i></span>
       ${near ? `<span class="dist" aria-label="${fmtMi(r.d)} away">${fmtMi(r.d)}</span>` : ""}
       <span class="meta"><b>${esc(r.cuisine)}</b> · ${esc(r.hood)}</span>
-      <span class="addr"><a href="${maps}" target="_blank" rel="noopener">${esc(r.address.replace(", Cambridge, MA", ","))}</a></span>
+      <span class="addr"><a href="${maps}" target="_blank" rel="noopener">${esc(r.address.replace(/, MA (\d{5})$/, " $1"))}</a>${r.source ? ` · <a class="src" href="${esc(r.source)}" target="_blank" rel="noopener">source</a>` : ""}</span>
     </li>`;
   }).join("") : `<li class="empty">No restaurants match these filters. Try clearing one, or use “Clear filters”.</li>`;
-  shownIds = new Set(shown.map(r => r.id));
+  shownIds = new Set(all.map(r => r.id));
   if (!hasMap) return;
   styleZones();
   markers.forEach((m, id) => { m.setStyle(styleFor(id, false)); if (shownIds.has(id)) m.bringToFront(); });
   showYou();
+  if (opts.keepMap) return;
   const target = state.hood && zones.get(state.hood) ? zones.get(state.hood).getBounds()
-    : L.latLngBounds((shown.length ? shown : R).map(r => [r.lat, r.lng]));
-  // Frame the user's dot too, unless they're far from Cambridge (would zoom the map way out)
-  if (near && shown.length && shown[0].d < 3) target.extend([state.here.lat, state.here.lng]);
+    : L.latLngBounds((all.length ? all : R).map(r => [r.lat, r.lng]));
+  // Frame the user's dot too, unless they're far away (would zoom the map way out)
+  if (near && all.length && all[0].d < 3) target.extend([state.here.lat, state.here.lng]);
   map.flyToBounds(target, { padding: [30, 30], maxZoom: 16, duration: .6 });
 }
 
@@ -440,6 +543,20 @@ const list = $("#list");
 list.addEventListener("mouseover", e => { const li = e.target.closest(".item"); if (li) hot(+li.dataset.id, true); });
 list.addEventListener("mouseout", e => { const li = e.target.closest(".item"); if (li) hot(+li.dataset.id, false); });
 
+$("#per").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  state.per = +b.dataset.n;
+  try { localStorage.setItem("perPage", state.per); } catch (err) {}
+  render({ keepMap: true });
+});
+$("#pager").addEventListener("click", e => {
+  const b = e.target.closest("button[data-go]"); if (!b || b.disabled) return;
+  state.page = +b.dataset.go;
+  render({ keepPage: true, keepMap: true });
+  const top = $("#count").getBoundingClientRect().top;
+  if (top < 0) $("#count").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+});
+$("#total").textContent = R.length;
 setupControls(); render();
 </script>
 </body>
