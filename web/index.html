@@ -83,6 +83,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .item .addr a:hover { text-decoration: underline; }
 .price { font-family: var(--font-mono); font-size: 14px; letter-spacing: .04em; grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap; }
 .price i { font-style: normal; color: var(--dot-dim); }
+.dist { font-family: var(--font-mono); font-size: 12px; color: var(--river-ink); grid-column: 2; grid-row: 2; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.geo-msg { color: var(--brick); }
 .empty { padding: 28px 10px; color: var(--muted); }
 
 .map-card { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
@@ -114,7 +116,7 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
     <div>
       <p class="eyebrow">Boston Lifesaver · Cambridge, MA</p>
       <h1>Cambridge Eats</h1>
-      <p class="lede">44 restaurants across Harvard, Central, Kendall, Inman, Porter and beyond. Search, filter by price, or tap a pin on the map.</p>
+      <p class="lede">44 restaurants across Harvard, Central, Kendall, Inman, Porter and beyond. Search, filter by price, sort by what's nearest to you, or tap a pin on the map.</p>
     </div>
     <div class="stats" id="stats"></div>
   </header>
@@ -127,6 +129,12 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
       </label>
       <select id="cuisine" aria-label="Cuisine"></select>
       <div class="price-group" role="group" aria-label="Price" id="prices"></div>
+      <select id="sort" aria-label="Sort">
+        <option value="">Sort: Default</option>
+        <option value="near">Sort: Nearest to me</option>
+        <option value="price-asc">Sort: Price, low to high</option>
+        <option value="price-desc">Sort: Price, high to low</option>
+      </select>
       <button class="reset" id="reset" type="button">Clear filters</button>
     </div>
     <div class="row">
@@ -137,7 +145,7 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
 
   <div class="main">
     <div>
-      <p class="result-line" id="count"></p>
+      <p class="result-line" aria-live="polite"><span id="count"></span> <span class="geo-msg" id="geo-msg"></span></p>
       <ul class="list" id="list"></ul>
     </div>
     <div class="map-wrap">
@@ -219,8 +227,29 @@ const GROUPS = [
 ];
 const inGroup = (r, g) => GROUPS.find(x => x[0] === g)[1].test(r.cuisine);
 
-const state = { q: "", cuisine: "", prices: new Set(), hood: "" };
+const state = { q: "", cuisine: "", prices: new Set(), hood: "", sort: "", here: null };
 const $ = s => document.querySelector(s);
+
+// Straight-line distance in miles (haversine)
+function miles(a, b) {
+  const rad = d => d * Math.PI / 180, dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 3958.8 * 2 * Math.asin(Math.sqrt(h));
+}
+const fmtMi = d => d < 0.1 ? "<0.1 mi" : d < 10 ? d.toFixed(1) + " mi" : Math.round(d) + " mi";
+
+// Ask the device for its location; on failure fall back to the default order
+function locate() {
+  const fail = msg => { state.sort = ""; $("#sort").value = ""; $("#geo-msg").textContent = msg; render(); };
+  if (!("geolocation" in navigator)) return fail("Location isn't available on this device.");
+  $("#geo-msg").textContent = "Finding your location…";
+  navigator.geolocation.getCurrentPosition(
+    pos => { state.here = { lat: pos.coords.latitude, lng: pos.coords.longitude }; $("#geo-msg").textContent = ""; render(); },
+    err => fail(err.code === err.PERMISSION_DENIED
+      ? "Location permission was denied. Allow it in your browser to sort by distance."
+      : "Couldn't get your location. Try again."),
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+}
 
 const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const matches = r =>
@@ -244,6 +273,10 @@ function setupControls() {
 
   $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
   $("#cuisine").addEventListener("change", e => { state.cuisine = e.target.value; render(); });
+  $("#sort").addEventListener("change", e => {
+    state.sort = e.target.value; $("#geo-msg").textContent = "";
+    if (state.sort === "near") locate(); else render();
+  });
   $("#prices").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     const p = b.dataset.p; state.prices.has(p) ? state.prices.delete(p) : state.prices.add(p);
@@ -355,14 +388,29 @@ function jump(id) {
   if (li) { li.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }); hot(id, true); setTimeout(() => hot(id, false), 1600); }
 }
 
+let youMarker;
+function showYou() {
+  if (!hasMap || !state.here) return;
+  const ll = [state.here.lat, state.here.lng];
+  const style = { radius: 8, fillColor: css("--river-ink"), color: css("--surface"), weight: 3, fillOpacity: 1, opacity: 1 };
+  if (!youMarker) youMarker = L.circleMarker(ll, style).addTo(map).bindTooltip("You are here", { className: "pin-tip", direction: "top", offset: [0, -8] });
+  else youMarker.setLatLng(ll).setStyle(style);
+  youMarker.bringToFront();
+}
+
 function render() {
-  const shown = R.filter(matches);
-  $("#count").textContent = shown.length === R.length ? `Showing all ${R.length} restaurants` : `Showing ${shown.length} of ${R.length} restaurants`;
+  const near = state.sort === "near" && state.here;
+  const shown = R.filter(matches).map(r => ({ ...r, d: state.here ? miles(state.here, r) : null }));
+  if (near) shown.sort((a, b) => a.d - b.d);
+  else if (state.sort === "price-asc") shown.sort((a, b) => a.price.length - b.price.length || a.id - b.id);
+  else if (state.sort === "price-desc") shown.sort((a, b) => b.price.length - a.price.length || a.id - b.id);
+  $("#count").textContent = (shown.length === R.length ? `Showing all ${R.length} restaurants` : `Showing ${shown.length} of ${R.length} restaurants`) + (near ? " · nearest first" : "");
   $("#list").innerHTML = shown.length ? shown.map(r => {
     const maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(r.name + ", " + r.address);
     return `<li class="item" data-id="${r.id}">
       <h3>${esc(r.name)}</h3>
       <span class="price" aria-label="Price ${r.price.length} of 4">${r.price}<i>${"$".repeat(4 - r.price.length)}</i></span>
+      ${near ? `<span class="dist" aria-label="${fmtMi(r.d)} away">${fmtMi(r.d)}</span>` : ""}
       <span class="meta"><b>${esc(r.cuisine)}</b> · ${esc(r.hood)}</span>
       <span class="addr"><a href="${maps}" target="_blank" rel="noopener">${esc(r.address.replace(", Cambridge, MA", ","))}</a></span>
     </li>`;
@@ -371,8 +419,11 @@ function render() {
   if (!hasMap) return;
   styleZones();
   markers.forEach((m, id) => { m.setStyle(styleFor(id, false)); if (shownIds.has(id)) m.bringToFront(); });
+  showYou();
   const target = state.hood && zones.get(state.hood) ? zones.get(state.hood).getBounds()
     : L.latLngBounds((shown.length ? shown : R).map(r => [r.lat, r.lng]));
+  // Frame the user's dot too, unless they're far from Cambridge (would zoom the map way out)
+  if (near && shown.length && shown[0].d < 3) target.extend([state.here.lat, state.here.lng]);
   map.flyToBounds(target, { padding: [30, 30], maxZoom: 16, duration: .6 });
 }
 
