@@ -91,6 +91,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .item .addr a { color: var(--river-ink); text-decoration: none; }
 .item .addr a:hover { text-decoration: underline; }
 .item .addr a.src { color: var(--muted); font-size: 12px; }
+.item .reviews { font-size: 12.5px; grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--muted); }
+.item .reviews a { color: var(--river-ink); text-decoration: none; font-weight: 500; }
+.item .reviews a:hover { text-decoration: underline; }
 .price { font-family: var(--font-mono); font-size: 14px; letter-spacing: .04em; grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap; }
 .price i { font-style: normal; color: var(--dot-dim); }
 .dist { font-family: var(--font-mono); font-size: 12px; color: var(--river-ink); grid-column: 2; grid-row: 2; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -518,12 +521,14 @@ function render(opts = {}) {
   renderPager(all.length);
   $("#list").innerHTML = shown.length ? shown.map(r => {
     const maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(r.name + ", " + r.address);
+    const yelp = "https://www.yelp.com/search?find_desc=" + encodeURIComponent(r.name) + "&find_loc=" + encodeURIComponent(r.address);
     return `<li class="item" data-id="${r.id}">
       <h3>${esc(r.name)}</h3>
       <span class="price" aria-label="Price ${r.price.length} of 4">${r.price}<i>${"$".repeat(4 - r.price.length)}</i></span>
       ${near ? `<span class="dist" aria-label="${fmtMi(r.d)} away">${fmtMi(r.d)}</span>` : ""}
       <span class="meta"><b>${esc(r.cuisine)}</b> · ${esc(r.hood)}</span>
       <span class="addr"><a href="${maps}" target="_blank" rel="noopener">${esc(r.address.replace(/, MA (\d{5})$/, " $1"))}</a>${r.source ? ` · <a class="src" href="${esc(r.source)}" target="_blank" rel="noopener">source</a>` : ""}</span>
+      <span class="reviews">Reviews: <a href="${maps}" target="_blank" rel="noopener" aria-label="${esc(r.name)} reviews on Google">Google ↗</a><a href="${yelp}" target="_blank" rel="noopener" aria-label="${esc(r.name)} reviews on Yelp">Yelp ↗</a></span>
     </li>`;
   }).join("") : `<li class="empty">No restaurants match these filters. Try clearing one, or use “Clear filters”.</li>`;
   shownIds = new Set(all.map(r => r.id));
