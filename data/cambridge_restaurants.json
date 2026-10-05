@@ -1,0 +1,403 @@
+{
+  "city": "Cambridge, MA",
+  "last_updated": "2026-10-05",
+  "count": 44,
+  "restaurants": [
+    {
+      "id": 1,
+      "name": "Harvest",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Contemporary American",
+      "address": "44 Brattle St, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$$$"
+    },
+    {
+      "id": 2,
+      "name": "Alden & Harlow",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Contemporary American",
+      "address": "40 Brattle St, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$$"
+    },
+    {
+      "id": 3,
+      "name": "Bar Enza",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Italian",
+      "address": "1 Bennett St (The Charles Hotel), Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$$"
+    },
+    {
+      "id": 4,
+      "name": "Cafe Sushi",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Japanese / Sushi",
+      "address": "1105 Massachusetts Ave, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$$"
+    },
+    {
+      "id": 5,
+      "name": "Mr. Bartley's Burger Cottage",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Burgers",
+      "address": "1246 Massachusetts Ave, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$"
+    },
+    {
+      "id": 6,
+      "name": "The Hourly Oyster House",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Seafood",
+      "address": "15 Dunster St, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$$"
+    },
+    {
+      "id": 7,
+      "name": "Felipe's Taqueria",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Mexican",
+      "address": "83 Mount Auburn St, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$"
+    },
+    {
+      "id": 8,
+      "name": "Pinocchio's Pizza & Subs",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Pizza",
+      "address": "74 Winthrop St, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$"
+    },
+    {
+      "id": 9,
+      "name": "Russell House Tavern",
+      "neighborhood": "Harvard Square",
+      "cuisine": "American / Gastropub",
+      "address": "14 John F Kennedy St, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$$"
+    },
+    {
+      "id": 10,
+      "name": "Grendel's Den",
+      "neighborhood": "Harvard Square",
+      "cuisine": "Pub",
+      "address": "89 Winthrop St, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$"
+    },
+    {
+      "id": 11,
+      "name": "The Helmand",
+      "neighborhood": "East Cambridge",
+      "cuisine": "Afghan",
+      "address": "143 First St, Cambridge, MA 02142",
+      "zip": "02142",
+      "price_range": "$$$"
+    },
+    {
+      "id": 12,
+      "name": "Oleana",
+      "neighborhood": "Inman Square",
+      "cuisine": "Mediterranean",
+      "address": "134 Hampshire St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$$"
+    },
+    {
+      "id": 13,
+      "name": "Puritan & Company",
+      "neighborhood": "Inman Square",
+      "cuisine": "Contemporary American",
+      "address": "1166 Cambridge St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 14,
+      "name": "Puritan Oyster Bar",
+      "neighborhood": "Inman Square",
+      "cuisine": "Seafood",
+      "address": "1166 Cambridge St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 15,
+      "name": "Punjabi Dhaba",
+      "neighborhood": "Inman Square",
+      "cuisine": "Indian",
+      "address": "225 Hampshire St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$"
+    },
+    {
+      "id": 16,
+      "name": "Ole Mexican Grill",
+      "neighborhood": "Inman Square",
+      "cuisine": "Mexican",
+      "address": "11 Springfield St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 17,
+      "name": "Bisq",
+      "neighborhood": "Inman Square",
+      "cuisine": "Small plates / Wine bar",
+      "address": "1071 Cambridge St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 18,
+      "name": "Giulia",
+      "neighborhood": "Porter Square",
+      "cuisine": "Italian",
+      "address": "1682 Massachusetts Ave, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$$$"
+    },
+    {
+      "id": 19,
+      "name": "Moeca",
+      "neighborhood": "Inman Square",
+      "cuisine": "Seafood / Italian",
+      "address": "1336 Cambridge St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$$"
+    },
+    {
+      "id": 20,
+      "name": "Sofra Bakery & Cafe",
+      "neighborhood": "West Cambridge",
+      "cuisine": "Middle Eastern bakery",
+      "address": "1 Belmont St, Cambridge, MA 02138",
+      "zip": "02138",
+      "price_range": "$$"
+    },
+    {
+      "id": 21,
+      "name": "Pagu",
+      "neighborhood": "Central Square",
+      "cuisine": "Japanese / Spanish",
+      "address": "310 Massachusetts Ave, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 22,
+      "name": "Darling",
+      "neighborhood": "Central Square",
+      "cuisine": "Chinese / Dim sum",
+      "address": "464 Massachusetts Ave, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 23,
+      "name": "Mamaleh's Delicatessen",
+      "neighborhood": "Kendall Square",
+      "cuisine": "Jewish deli",
+      "address": "15 Hampshire St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 24,
+      "name": "Life Alive",
+      "neighborhood": "Central Square",
+      "cuisine": "Vegetarian",
+      "address": "765 Massachusetts Ave, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 25,
+      "name": "Shalimar of India",
+      "neighborhood": "Central Square",
+      "cuisine": "Indian",
+      "address": "546 Massachusetts Ave, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 26,
+      "name": "Brookline Lunch",
+      "neighborhood": "Central Square",
+      "cuisine": "Breakfast / Middle Eastern",
+      "address": "9 Brookline St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$"
+    },
+    {
+      "id": 27,
+      "name": "Yume Wo Katare",
+      "neighborhood": "Porter Square",
+      "cuisine": "Ramen",
+      "address": "1923 Massachusetts Ave, Cambridge, MA 02140",
+      "zip": "02140",
+      "price_range": "$$"
+    },
+    {
+      "id": 28,
+      "name": "Roxy's Grilled Cheese & Burgers",
+      "neighborhood": "Central Square",
+      "cuisine": "Burgers / Sandwiches",
+      "address": "485 Massachusetts Ave, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$"
+    },
+    {
+      "id": 29,
+      "name": "The Mad Monkfish",
+      "neighborhood": "Central Square",
+      "cuisine": "Sushi / Asian fusion",
+      "address": "524 Massachusetts Ave, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 30,
+      "name": "Pammy's",
+      "neighborhood": "Mid-Cambridge",
+      "cuisine": "Italian",
+      "address": "928 Massachusetts Ave, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$$"
+    },
+    {
+      "id": 31,
+      "name": "Area Four",
+      "neighborhood": "Kendall Square",
+      "cuisine": "Pizza",
+      "address": "500 Technology Square, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 32,
+      "name": "Alice & Monarch",
+      "neighborhood": "Kendall Square",
+      "cuisine": "Mediterranean-Italian / Cocktail & dessert lounge",
+      "address": "238 Main St, Cambridge, MA 02142",
+      "zip": "02142",
+      "price_range": "$$$"
+    },
+    {
+      "id": 33,
+      "name": "Fallow Kin",
+      "neighborhood": "Central Square",
+      "cuisine": "Farm-to-table American",
+      "address": "853 Main St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 34,
+      "name": "Geppetto",
+      "neighborhood": "East Cambridge",
+      "cuisine": "Italian",
+      "address": "100 Binney St, Cambridge, MA 02142",
+      "zip": "02142",
+      "price_range": "$$$$"
+    },
+    {
+      "id": 35,
+      "name": "State Park",
+      "neighborhood": "Kendall Square",
+      "cuisine": "Bar food / American",
+      "address": "1 Kendall Square, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 36,
+      "name": "Judy's Bay",
+      "neighborhood": "The Port",
+      "cuisine": "Japanese izakaya",
+      "address": "279 Broadway, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 37,
+      "name": "Alive & Kicking Lobsters",
+      "neighborhood": "Cambridgeport",
+      "cuisine": "Seafood / Lobster rolls",
+      "address": "269 Putnam Ave, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 38,
+      "name": "New Deal Fish Market",
+      "neighborhood": "East Cambridge",
+      "cuisine": "Seafood / Sushi",
+      "address": "622 Cambridge St, Cambridge, MA 02141",
+      "zip": "02141",
+      "price_range": "$$"
+    },
+    {
+      "id": 39,
+      "name": "The Coast Cafe",
+      "neighborhood": "Riverside",
+      "cuisine": "Southern / Soul food",
+      "address": "233 River St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 40,
+      "name": "The Friendly Toast",
+      "neighborhood": "Kendall Square",
+      "cuisine": "Breakfast / American",
+      "address": "1 Kendall Square, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$"
+    },
+    {
+      "id": 41,
+      "name": "Muqueca",
+      "neighborhood": "Inman Square",
+      "cuisine": "Brazilian",
+      "address": "1008 Cambridge St, Cambridge, MA 02141",
+      "zip": "02141",
+      "price_range": "$$"
+    },
+    {
+      "id": 42,
+      "name": "Midwest Grill",
+      "neighborhood": "Inman Square",
+      "cuisine": "Brazilian churrascaria",
+      "address": "1124 Cambridge St, Cambridge, MA 02139",
+      "zip": "02139",
+      "price_range": "$$$"
+    },
+    {
+      "id": 43,
+      "name": "Shy Bird",
+      "neighborhood": "Kendall Square",
+      "cuisine": "Rotisserie / Cafe",
+      "address": "390 Third St, Cambridge, MA 02142",
+      "zip": "02142",
+      "price_range": "$$"
+    },
+    {
+      "id": 44,
+      "name": "Café Luna",
+      "neighborhood": "Kendall Square",
+      "cuisine": "Brunch / American",
+      "address": "350 Third St, Cambridge, MA 02142",
+      "zip": "02142",
+      "price_range": "$$"
+    }
+  ]
+}

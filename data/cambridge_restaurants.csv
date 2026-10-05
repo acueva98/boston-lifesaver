@@ -1,0 +1,45 @@
+id,name,neighborhood,cuisine,address,zip,price_range
+1,Harvest,Harvard Square,Contemporary American,"44 Brattle St, Cambridge, MA 02138",02138,$$$$
+2,Alden & Harlow,Harvard Square,Contemporary American,"40 Brattle St, Cambridge, MA 02138",02138,$$$
+3,Bar Enza,Harvard Square,Italian,"1 Bennett St (The Charles Hotel), Cambridge, MA 02138",02138,$$$
+4,Cafe Sushi,Harvard Square,Japanese / Sushi,"1105 Massachusetts Ave, Cambridge, MA 02138",02138,$$$
+5,Mr. Bartley's Burger Cottage,Harvard Square,Burgers,"1246 Massachusetts Ave, Cambridge, MA 02138",02138,$$
+6,The Hourly Oyster House,Harvard Square,Seafood,"15 Dunster St, Cambridge, MA 02138",02138,$$$
+7,Felipe's Taqueria,Harvard Square,Mexican,"83 Mount Auburn St, Cambridge, MA 02138",02138,$
+8,Pinocchio's Pizza & Subs,Harvard Square,Pizza,"74 Winthrop St, Cambridge, MA 02138",02138,$
+9,Russell House Tavern,Harvard Square,American / Gastropub,"14 John F Kennedy St, Cambridge, MA 02138",02138,$$$
+10,Grendel's Den,Harvard Square,Pub,"89 Winthrop St, Cambridge, MA 02138",02138,$$
+11,The Helmand,East Cambridge,Afghan,"143 First St, Cambridge, MA 02142",02142,$$$
+12,Oleana,Inman Square,Mediterranean,"134 Hampshire St, Cambridge, MA 02139",02139,$$$$
+13,Puritan & Company,Inman Square,Contemporary American,"1166 Cambridge St, Cambridge, MA 02139",02139,$$$
+14,Puritan Oyster Bar,Inman Square,Seafood,"1166 Cambridge St, Cambridge, MA 02139",02139,$$$
+15,Punjabi Dhaba,Inman Square,Indian,"225 Hampshire St, Cambridge, MA 02139",02139,$
+16,Ole Mexican Grill,Inman Square,Mexican,"11 Springfield St, Cambridge, MA 02139",02139,$$
+17,Bisq,Inman Square,Small plates / Wine bar,"1071 Cambridge St, Cambridge, MA 02139",02139,$$$
+18,Giulia,Porter Square,Italian,"1682 Massachusetts Ave, Cambridge, MA 02138",02138,$$$$
+19,Moeca,Inman Square,Seafood / Italian,"1336 Cambridge St, Cambridge, MA 02139",02139,$$$$
+20,Sofra Bakery & Cafe,West Cambridge,Middle Eastern bakery,"1 Belmont St, Cambridge, MA 02138",02138,$$
+21,Pagu,Central Square,Japanese / Spanish,"310 Massachusetts Ave, Cambridge, MA 02139",02139,$$$
+22,Darling,Central Square,Chinese / Dim sum,"464 Massachusetts Ave, Cambridge, MA 02139",02139,$$$
+23,Mamaleh's Delicatessen,Kendall Square,Jewish deli,"15 Hampshire St, Cambridge, MA 02139",02139,$$
+24,Life Alive,Central Square,Vegetarian,"765 Massachusetts Ave, Cambridge, MA 02139",02139,$$
+25,Shalimar of India,Central Square,Indian,"546 Massachusetts Ave, Cambridge, MA 02139",02139,$$
+26,Brookline Lunch,Central Square,Breakfast / Middle Eastern,"9 Brookline St, Cambridge, MA 02139",02139,$
+27,Yume Wo Katare,Porter Square,Ramen,"1923 Massachusetts Ave, Cambridge, MA 02140",02140,$$
+28,Roxy's Grilled Cheese & Burgers,Central Square,Burgers / Sandwiches,"485 Massachusetts Ave, Cambridge, MA 02139",02139,$
+29,The Mad Monkfish,Central Square,Sushi / Asian fusion,"524 Massachusetts Ave, Cambridge, MA 02139",02139,$$$
+30,Pammy's,Mid-Cambridge,Italian,"928 Massachusetts Ave, Cambridge, MA 02139",02139,$$$$
+31,Area Four,Kendall Square,Pizza,"500 Technology Square, Cambridge, MA 02139",02139,$$
+32,Alice & Monarch,Kendall Square,Mediterranean-Italian / Cocktail & dessert lounge,"238 Main St, Cambridge, MA 02142",02142,$$$
+33,Fallow Kin,Central Square,Farm-to-table American,"853 Main St, Cambridge, MA 02139",02139,$$$
+34,Geppetto,East Cambridge,Italian,"100 Binney St, Cambridge, MA 02142",02142,$$$$
+35,State Park,Kendall Square,Bar food / American,"1 Kendall Square, Cambridge, MA 02139",02139,$$
+36,Judy's Bay,The Port,Japanese izakaya,"279 Broadway, Cambridge, MA 02139",02139,$$$
+37,Alive & Kicking Lobsters,Cambridgeport,Seafood / Lobster rolls,"269 Putnam Ave, Cambridge, MA 02139",02139,$$
+38,New Deal Fish Market,East Cambridge,Seafood / Sushi,"622 Cambridge St, Cambridge, MA 02141",02141,$$
+39,The Coast Cafe,Riverside,Southern / Soul food,"233 River St, Cambridge, MA 02139",02139,$$
+40,The Friendly Toast,Kendall Square,Breakfast / American,"1 Kendall Square, Cambridge, MA 02139",02139,$$
+41,Muqueca,Inman Square,Brazilian,"1008 Cambridge St, Cambridge, MA 02141",02141,$$
+42,Midwest Grill,Inman Square,Brazilian churrascaria,"1124 Cambridge St, Cambridge, MA 02139",02139,$$$
+43,Shy Bird,Kendall Square,Rotisserie / Cafe,"390 Third St, Cambridge, MA 02142",02142,$$
+44,Café Luna,Kendall Square,Brunch / American,"350 Third St, Cambridge, MA 02142",02142,$$
