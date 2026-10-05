@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Searchable guide to 44 Cambridge, MA restaurants.">
+<title>Cambridge Eats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: filter bar on top; list of restaurant rows on the left, sticky street-sketch map of Cambridge on the right; stacks on phones. */
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --fg: #1d2124;
+  --muted: #5d656b;
+  --line: #dddad3;
+  --brick: #a5432b;      /* Cambridge brick: accent */
+  --brick-soft: #f3e3dc;
+  --river: #9dbbd1;
+  --river-ink: #2f5d7c;
+  --road: #cfcac0;
+  --dot: #a5432b;
+  --dot-dim: #c9c3b8;
+  --font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141719; --surface: #1c2023; --fg: #ebe8e2; --muted: #9aa2a8; --line: #2e3438;
+    --brick: #e07b5f; --brick-soft: #3a2420; --river: #24445a; --river-ink: #8fb8d4;
+    --road: #3a4045; --dot: #e07b5f; --dot-dim: #4a5156; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141719; --surface: #1c2023; --fg: #ebe8e2; --muted: #9aa2a8; --line: #2e3438;
+  --brick: #e07b5f; --brick-soft: #3a2420; --river: #24445a; --river-ink: #8fb8d4;
+  --road: #3a4045; --dot: #e07b5f; --dot-dim: #4a5156; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 48px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin-bottom: 22px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--brick); margin: 0 0 4px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 6vw, 56px); line-height: 1; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); margin: 8px 0 0; max-width: 56ch; }
+.stats { display: flex; gap: 22px; font-variant-numeric: tabular-nums; }
+.stat b { display: block; font-family: var(--font-display); font-size: 28px; line-height: 1; }
+.stat span { font-size: 12px; color: var(--muted); }
+
+.filters { display: grid; gap: 12px; padding-block: 14px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.search { flex: 1 1 240px; min-width: 0; position: relative; }
+.search input { width: 100%; font: inherit; padding: 9px 12px 9px 34px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); }
+.search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; stroke: var(--muted); fill: none; }
+select { font: inherit; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); max-width: 100%; }
+.price-group { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.price-group button { font-family: var(--font-mono); font-size: 13px; border: 0; background: transparent; color: var(--muted); padding: 9px 11px; cursor: pointer; }
+.price-group button + button { border-left: 1px solid var(--line); }
+.price-group button[aria-pressed="true"] { background: var(--brick); color: #fff; }
+.label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: 13px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--fg); cursor: pointer; font-variant-numeric: tabular-nums; }
+.chip small { color: var(--muted); margin-left: 4px; }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.chip[aria-pressed="true"] small { color: inherit; opacity: .7; }
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--brick); outline-offset: 2px; }
+.reset { font: inherit; font-size: 13px; background: none; border: 0; color: var(--brick); cursor: pointer; text-decoration: underline; padding: 4px; }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: start; }
+.result-line { font-size: 13px; color: var(--muted); margin: 0 0 8px; font-variant-numeric: tabular-nums; }
+.list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; padding: 13px 10px; border-bottom: 1px solid var(--line); cursor: default; border-radius: 6px; transition: background .15s; }
+.item.hot { background: var(--brick-soft); }
+.item h3 { font-family: var(--font-display); font-weight: 500; font-size: 19px; margin: 0; line-height: 1.25; }
+.item .meta { font-size: 13.5px; color: var(--muted); grid-column: 1; }
+.item .meta b { color: var(--fg); font-weight: 500; }
+.item .addr { font-size: 13px; grid-column: 1; }
+.item .addr a { color: var(--river-ink); text-decoration: none; }
+.item .addr a:hover { text-decoration: underline; }
+.price { font-family: var(--font-mono); font-size: 14px; letter-spacing: .04em; grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap; }
+.price i { font-style: normal; color: var(--dot-dim); }
+.empty { padding: 28px 10px; color: var(--muted); }
+
+.map-card { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.map-card svg { display: block; width: 100%; height: auto; }
+.map-note { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); padding: 6px 4px 2px; }
+.river { fill: none; stroke: var(--river); stroke-width: 16; stroke-linecap: round; stroke-linejoin: round; }
+.road { fill: none; stroke: var(--road); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1 0; }
+.road-label { font-family: var(--font-mono); font-size: 9.5px; fill: var(--muted); letter-spacing: .05em; }
+.hood-label { font-family: var(--font-display); font-weight: 500; font-size: 12px; fill: var(--muted); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.water-label { font-family: var(--font-body); font-style: italic; font-size: 11px; fill: var(--river-ink); }
+.pin { fill: var(--dot); stroke: var(--surface); stroke-width: 1.5; cursor: pointer; transition: r .15s, fill .15s; }
+.pin.off { fill: var(--dot-dim); }
+.pin.hot { fill: var(--fg); }
+.tip { font-family: var(--font-body); font-size: 12px; font-weight: 600; fill: var(--fg); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; pointer-events: none; }
+
+footer { margin-top: 32px; font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+footer code { font-family: var(--font-mono); font-size: 12px; }
+
+@media (max-width: 820px) {
+  .main { grid-template-columns: minmax(0, 1fr); }
+  .map-wrap { order: -1; }
+  .map-card { position: static; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">Boston Lifesaver · Cambridge, MA</p>
+      <h1>Cambridge Eats</h1>
+      <p class="lede">44 restaurants across Harvard, Central, Kendall, Inman, Porter and beyond. Search, filter by price, or tap a dot on the map.</p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section class="filters" aria-label="Filters">
+    <div class="row">
+      <label class="search">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search name, cuisine or street" aria-label="Search restaurants">
+      </label>
+      <select id="cuisine" aria-label="Cuisine"></select>
+      <div class="price-group" role="group" aria-label="Price" id="prices"></div>
+      <button class="reset" id="reset" type="button">Clear filters</button>
+    </div>
+    <div class="row">
+      <span class="label">Neighborhood</span>
+      <div class="chips" id="hoods"></div>
+    </div>
+  </section>
+
+  <div class="main">
+    <div>
+      <p class="result-line" id="count"></p>
+      <ul class="list" id="list"></ul>
+    </div>
+    <div class="map-wrap">
+      <div class="map-card">
+        <svg id="map" viewBox="0 0 560 444" role="img" aria-label="Map of Cambridge with restaurant locations"></svg>
+        <div class="map-note"><span>Positions are approximate.</span><span>N ↑ · about 5.5 km across</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Data: <code>data/cambridge_restaurants.json</code></span>
+    <span>Last updated October 5, 2026</span>
+    <span>Price: $ under $15 · $$ $15–30 · $$$ $30–60 · $$$$ $60+ per person (typical guide ranges)</span>
+  </footer>
+</div>
+
+<script>
+const R = [
+[1,"Harvest","Harvard Square","Contemporary American","44 Brattle St, Cambridge, MA 02138","$$$$",42.3741,-71.1207],
+[2,"Alden & Harlow","Harvard Square","Contemporary American","40 Brattle St, Cambridge, MA 02138","$$$",42.3737,-71.1199],
+[3,"Bar Enza","Harvard Square","Italian","1 Bennett St (The Charles Hotel), Cambridge, MA 02138","$$$",42.3721,-71.1222],
+[4,"Cafe Sushi","Harvard Square","Japanese / Sushi","1105 Massachusetts Ave, Cambridge, MA 02138","$$$",42.3709,-71.1137],
+[5,"Mr. Bartley's Burger Cottage","Harvard Square","Burgers","1246 Massachusetts Ave, Cambridge, MA 02138","$$",42.3726,-71.1157],
+[6,"The Hourly Oyster House","Harvard Square","Seafood","15 Dunster St, Cambridge, MA 02138","$$$",42.3729,-71.1183],
+[7,"Felipe's Taqueria","Harvard Square","Mexican","83 Mount Auburn St, Cambridge, MA 02138","$",42.3722,-71.1172],
+[8,"Pinocchio's Pizza & Subs","Harvard Square","Pizza","74 Winthrop St, Cambridge, MA 02138","$",42.3716,-71.1192],
+[9,"Russell House Tavern","Harvard Square","American / Gastropub","14 John F Kennedy St, Cambridge, MA 02138","$$$",42.3732,-71.1194],
+[10,"Grendel's Den","Harvard Square","Pub","89 Winthrop St, Cambridge, MA 02138","$$",42.3712,-71.1203],
+[11,"The Helmand","East Cambridge","Afghan","143 First St, Cambridge, MA 02142","$$$",42.3681,-71.0786],
+[12,"Oleana","Inman Square","Mediterranean","134 Hampshire St, Cambridge, MA 02139","$$$$",42.3711,-71.0990],
+[13,"Puritan & Company","Inman Square","Contemporary American","1166 Cambridge St, Cambridge, MA 02139","$$$",42.3740,-71.1006],
+[14,"Puritan Oyster Bar","Inman Square","Seafood","1166 Cambridge St, Cambridge, MA 02139","$$$",42.3743,-71.0999],
+[15,"Punjabi Dhaba","Inman Square","Indian","225 Hampshire St, Cambridge, MA 02139","$",42.3727,-71.1018],
+[16,"Ole Mexican Grill","Inman Square","Mexican","11 Springfield St, Cambridge, MA 02139","$$",42.3733,-71.1028],
+[17,"Bisq","Inman Square","Small plates / Wine bar","1071 Cambridge St, Cambridge, MA 02139","$$$",42.3733,-71.0972],
+[18,"Giulia","Porter Square","Italian","1682 Massachusetts Ave, Cambridge, MA 02138","$$$$",42.3802,-71.1196],
+[19,"Moeca","Inman Square","Seafood / Italian","1336 Cambridge St, Cambridge, MA 02139","$$$$",42.3748,-71.1045],
+[20,"Sofra Bakery & Cafe","West Cambridge","Middle Eastern bakery","1 Belmont St, Cambridge, MA 02138","$$",42.3786,-71.1388],
+[21,"Pagu","Central Square","Japanese / Spanish","310 Massachusetts Ave, Cambridge, MA 02139","$$$",42.3614,-71.0982],
+[22,"Darling","Central Square","Chinese / Dim sum","464 Massachusetts Ave, Cambridge, MA 02139","$$$",42.3637,-71.1012],
+[23,"Mamaleh's Delicatessen","Kendall Square","Jewish deli","15 Hampshire St, Cambridge, MA 02139","$$",42.3640,-71.0935],
+[24,"Life Alive","Central Square","Vegetarian","765 Massachusetts Ave, Cambridge, MA 02139","$$",42.3668,-71.1064],
+[25,"Shalimar of India","Central Square","Indian","546 Massachusetts Ave, Cambridge, MA 02139","$$",42.3651,-71.1030],
+[26,"Brookline Lunch","Central Square","Breakfast / Middle Eastern","9 Brookline St, Cambridge, MA 02139","$",42.3638,-71.1037],
+[27,"Yume Wo Katare","Porter Square","Ramen","1923 Massachusetts Ave, Cambridge, MA 02140","$$",42.3893,-71.1196],
+[28,"Roxy's Grilled Cheese & Burgers","Central Square","Burgers / Sandwiches","485 Massachusetts Ave, Cambridge, MA 02139","$",42.3643,-71.1018],
+[29,"The Mad Monkfish","Central Square","Sushi / Asian fusion","524 Massachusetts Ave, Cambridge, MA 02139","$$$",42.3648,-71.1026],
+[30,"Pammy's","Mid-Cambridge","Italian","928 Massachusetts Ave, Cambridge, MA 02139","$$$$",42.3693,-71.1100],
+[31,"Area Four","Kendall Square","Pizza","500 Technology Square, Cambridge, MA 02139","$$",42.3630,-71.0918],
+[32,"Alice & Monarch","Kendall Square","Mediterranean-Italian / Cocktail & dessert lounge","238 Main St, Cambridge, MA 02142","$$$",42.3624,-71.0855],
+[33,"Fallow Kin","Central Square","Farm-to-table American","853 Main St, Cambridge, MA 02139","$$$",42.3628,-71.0995],
+[34,"Geppetto","East Cambridge","Italian","100 Binney St, Cambridge, MA 02142","$$$$",42.3664,-71.0838],
+[35,"State Park","Kendall Square","Bar food / American","1 Kendall Square, Cambridge, MA 02139","$$",42.3666,-71.0905],
+[36,"Judy's Bay","The Port","Japanese izakaya","279 Broadway, Cambridge, MA 02139","$$$",42.3667,-71.0965],
+[37,"Alive & Kicking Lobsters","Cambridgeport","Seafood / Lobster rolls","269 Putnam Ave, Cambridge, MA 02139","$$",42.3598,-71.1082],
+[38,"New Deal Fish Market","East Cambridge","Seafood / Sushi","622 Cambridge St, Cambridge, MA 02141","$$",42.3718,-71.0870],
+[39,"The Coast Cafe","Riverside","Southern / Soul food","233 River St, Cambridge, MA 02139","$$",42.3628,-71.1112],
+[40,"The Friendly Toast","Kendall Square","Breakfast / American","1 Kendall Square, Cambridge, MA 02139","$$",42.3662,-71.0910],
+[41,"Muqueca","Inman Square","Brazilian","1008 Cambridge St, Cambridge, MA 02141","$$",42.3727,-71.0955],
+[42,"Midwest Grill","Inman Square","Brazilian churrascaria","1124 Cambridge St, Cambridge, MA 02139","$$$",42.3737,-71.0990],
+[43,"Shy Bird","Kendall Square","Rotisserie / Cafe","390 Third St, Cambridge, MA 02142","$$",42.3644,-71.0812],
+[44,"Café Luna","Kendall Square","Brunch / American","350 Third St, Cambridge, MA 02142","$$",42.3633,-71.0818]
+].map(([id,name,hood,cuisine,address,price,lat,lng]) => ({id,name,hood,cuisine,address,price,lat,lng}));
+
+// Broad cuisine groups for the dropdown (the raw cuisine text stays on each row)
+const GROUPS = [
+  ["Seafood & sushi", /seafood|sushi|oyster|lobster|fish/i],
+  ["Japanese & Asian", /japanese|ramen|izakaya|chinese|dim sum|asian/i],
+  ["Italian & pizza", /italian|pizza/i],
+  ["Mediterranean & Middle Eastern", /mediterranean|middle eastern|afghan/i],
+  ["Latin American", /mexican|brazilian/i],
+  ["Indian", /indian/i],
+  ["Burgers, pubs & bar food", /burger|pub|bar food|gastropub|wine bar/i],
+  ["Breakfast & brunch", /breakfast|brunch|bakery|cafe|deli/i],
+  ["Contemporary American", /contemporary|farm-to-table|southern|soul|rotisserie/i],
+  ["Vegetarian", /vegetarian/i],
+];
+const inGroup = (r, g) => GROUPS.find(x => x[0] === g)[1].test(r.cuisine);
+
+const state = { q: "", cuisine: "", prices: new Set(), hood: "" };
+const $ = s => document.querySelector(s);
+
+// Projection: simple equirectangular box around Cambridge
+const B = { w: -71.145, e: -71.072, s: 42.351, n: 42.393 }, W = 560, H = 444;
+const px = lng => (lng - B.w) / (B.e - B.w) * W;
+const py = lat => (B.n - lat) / (B.n - B.s) * H;
+const pts = a => a.map(([la, lo]) => `${px(lo).toFixed(1)},${py(la).toFixed(1)}`).join(" ");
+
+function drawBase() {
+  const svg = $("#map");
+  const river = [[42.3772,-71.1460],[42.3745,-71.1360],[42.3712,-71.1268],[42.3688,-71.1205],[42.3655,-71.1175],[42.3605,-71.1165],[42.3548,-71.1140],[42.3528,-71.1065],[42.3540,-71.0975],[42.3556,-71.0890],[42.3584,-71.0810],[42.3622,-71.0745],[42.3660,-71.0700]];
+  const massAve = [[42.3925,-71.1210],[42.3884,-71.1191],[42.3800,-71.1196],[42.3740,-71.1188],[42.3709,-71.1137],[42.3668,-71.1064],[42.3651,-71.1030],[42.3614,-71.0982],[42.3588,-71.0938],[42.3540,-71.0915]];
+  const camSt = [[42.3748,-71.1150],[42.3745,-71.1045],[42.3737,-71.0990],[42.3727,-71.0955],[42.3712,-71.0870],[42.3700,-71.0790],[42.3695,-71.0730]];
+  const broadway = [[42.3710,-71.1120],[42.3685,-71.1040],[42.3667,-71.0965],[42.3655,-71.0900],[42.3640,-71.0830]];
+  const hoods = [["Porter Sq",42.3885,-71.1240],["Harvard Sq",42.3768,-71.1260],["West Cambridge",42.3820,-71.1385],["Inman Sq",42.3770,-71.1015],["East Cambridge",42.3730,-71.0790],["Central Sq",42.3672,-71.1015],["Kendall",42.3606,-71.0870],["Cambridgeport",42.3572,-71.1040],["Riverside",42.3615,-71.1130],["Mid-Cambridge",42.3705,-71.1080]];
+  let h = `<rect x="0" y="0" width="${W}" height="${H}" fill="var(--surface)"/>`;
+  h += `<polyline class="river" points="${pts(river)}"/>`;
+  h += `<text class="water-label" x="${px(-71.1035)}" y="${py(42.3516)}" text-anchor="middle">Charles River · Boston beyond</text>`;
+  for (const r of [massAve, camSt, broadway]) h += `<polyline class="road" points="${pts(r)}"/>`;
+  h += `<text class="road-label" x="${px(-71.1178)+6}" y="${py(42.3840)}">MASS AVE</text>`;
+  h += `<text class="road-label" x="${px(-71.1110)}" y="${py(42.3757)}">CAMBRIDGE ST</text>`;
+  for (const [n, la, lo] of hoods) h += `<text class="hood-label" x="${px(lo)}" y="${py(la)}" text-anchor="middle">${n}</text>`;
+  h += `<g id="pins"></g><g id="tipg"></g>`;
+  svg.innerHTML = h;
+}
+
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const matches = r =>
+  (!state.q || (r.name + " " + r.cuisine + " " + r.address + " " + r.hood).toLowerCase().includes(state.q)) &&
+  (!state.cuisine || inGroup(r, state.cuisine)) &&
+  (!state.prices.size || state.prices.has(r.price)) &&
+  (!state.hood || r.hood === state.hood);
+
+function setupControls() {
+  const groups = GROUPS.map(g => g[0]).filter(g => R.some(r => inGroup(r, g)));
+  $("#cuisine").innerHTML = `<option value="">All cuisines</option>` + groups.map(g => `<option>${esc(g)}</option>`).join("");
+  $("#prices").innerHTML = ["$", "$$", "$$$", "$$$$"].map(p => `<button type="button" aria-pressed="false" data-p="${p}">${p}</button>`).join("");
+  const counts = {};
+  R.forEach(r => counts[r.hood] = (counts[r.hood] || 0) + 1);
+  const hoods = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
+  $("#hoods").innerHTML = `<button class="chip" type="button" aria-pressed="true" data-h="">All<small>${R.length}</small></button>` +
+    hoods.map(h => `<button class="chip" type="button" aria-pressed="false" data-h="${esc(h)}">${esc(h)}<small>${counts[h]}</small></button>`).join("");
+
+  const n = new Set(R.map(r => r.hood)).size, c = new Set(R.map(r => r.cuisine)).size;
+  $("#stats").innerHTML = `<div class="stat"><b>${R.length}</b><span>restaurants</span></div><div class="stat"><b>${n}</b><span>neighborhoods</span></div><div class="stat"><b>${R.filter(r => r.price.length <= 2).length}</b><span>at $ or $$</span></div>`;
+
+  $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+  $("#cuisine").addEventListener("change", e => { state.cuisine = e.target.value; render(); });
+  $("#prices").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const p = b.dataset.p; state.prices.has(p) ? state.prices.delete(p) : state.prices.add(p);
+    b.setAttribute("aria-pressed", state.prices.has(p)); render();
+  });
+  $("#hoods").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    state.hood = b.dataset.h;
+    document.querySelectorAll("#hoods .chip").forEach(c => c.setAttribute("aria-pressed", c === b)); render();
+  });
+  $("#reset").addEventListener("click", () => {
+    state.q = ""; state.cuisine = ""; state.prices.clear(); state.hood = "";
+    $("#q").value = ""; $("#cuisine").value = "";
+    document.querySelectorAll("#prices button").forEach(b => b.setAttribute("aria-pressed", "false"));
+    document.querySelectorAll("#hoods .chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.h === ""));
+    render();
+  });
+}
+
+function hot(id, on) {
+  const li = document.querySelector(`.item[data-id="${id}"]`);
+  const pin = document.querySelector(`.pin[data-id="${id}"]`);
+  if (li) li.classList.toggle("hot", on);
+  if (pin) { pin.classList.toggle("hot", on); pin.setAttribute("r", on ? 8 : 5.5); }
+  const tg = $("#tipg");
+  if (on && pin) {
+    const r = R.find(x => x.id === id), x = px(r.lng), y = py(r.lat);
+    const anchor = x > W - 140 ? "end" : x < 140 ? "start" : "middle";
+    tg.innerHTML = `<text class="tip" x="${x}" y="${y - 13}" text-anchor="${anchor}">${esc(r.name)}</text>`;
+  } else tg.innerHTML = "";
+}
+
+function render() {
+  const shown = R.filter(matches);
+  $("#count").textContent = shown.length === R.length ? `Showing all ${R.length} restaurants` : `Showing ${shown.length} of ${R.length} restaurants`;
+  $("#list").innerHTML = shown.length ? shown.map(r => {
+    const maps = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(r.name + ", " + r.address);
+    return `<li class="item" data-id="${r.id}">
+      <h3>${esc(r.name)}</h3>
+      <span class="price" aria-label="Price ${r.price.length} of 4">${r.price}<i>${"$".repeat(4 - r.price.length)}</i></span>
+      <span class="meta"><b>${esc(r.cuisine)}</b> · ${esc(r.hood)}</span>
+      <span class="addr"><a href="${maps}" target="_blank" rel="noopener">${esc(r.address.replace(", Cambridge, MA", ","))}</a></span>
+    </li>`;
+  }).join("") : `<li class="empty">No restaurants match these filters. Try clearing one, or use “Clear filters”.</li>`;
+
+  const ids = new Set(shown.map(r => r.id));
+  // draw dimmed pins first so matching pins sit on top
+  const order = [...R].sort((a, b) => ids.has(a.id) - ids.has(b.id));
+  $("#pins").innerHTML = order.map(r => `<circle class="pin${ids.has(r.id) ? "" : " off"}" data-id="${r.id}" cx="${px(r.lng).toFixed(1)}" cy="${py(r.lat).toFixed(1)}" r="5.5" tabindex="${ids.has(r.id) ? 0 : -1}"><title>${esc(r.name)}</title></circle>`).join("");
+}
+
+function wire() {
+  const list = $("#list"), pins = $("#map");
+  list.addEventListener("mouseover", e => { const li = e.target.closest(".item"); if (li) hot(+li.dataset.id, true); });
+  list.addEventListener("mouseout", e => { const li = e.target.closest(".item"); if (li) hot(+li.dataset.id, false); });
+  pins.addEventListener("mouseover", e => { if (e.target.classList.contains("pin")) hot(+e.target.dataset.id, true); });
+  pins.addEventListener("mouseout", e => { if (e.target.classList.contains("pin")) hot(+e.target.dataset.id, false); });
+  const jump = e => {
+    const p = e.target.closest(".pin"); if (!p) return;
+    const id = +p.dataset.id;
+    if (p.classList.contains("off")) $("#reset").click();
+    const li = document.querySelector(`.item[data-id="${id}"]`);
+    if (li) { li.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }); hot(id, true); setTimeout(() => hot(id, false), 1600); }
+  };
+  pins.addEventListener("click", jump);
+  pins.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); jump(e); } });
+}
+
+drawBase(); setupControls(); render(); wire();
+</script>
+</body>
+</html>
