@@ -71,7 +71,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .reset { font: inherit; font-size: 13px; background: none; border: 0; color: var(--brick); cursor: pointer; text-decoration: underline; padding: 4px; }
 
 .main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: start; }
-.result-line { font-size: 13px; color: var(--muted); margin: 0 0 8px; font-variant-numeric: tabular-nums; }
+.list-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 8px; }
+.result-line { font-size: 13px; color: var(--muted); margin: 0; font-variant-numeric: tabular-nums; flex: 1 1 180px; }
+#sort button { font-size: 12px; padding: 6px 10px; }
 .list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; padding: 13px 10px; border-bottom: 1px solid var(--line); cursor: default; border-radius: 6px; transition: background .15s; }
 .item.hot { background: var(--brick-soft); }
@@ -129,12 +131,6 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
       </label>
       <select id="cuisine" aria-label="Cuisine"></select>
       <div class="price-group" role="group" aria-label="Price" id="prices"></div>
-      <select id="sort" aria-label="Sort">
-        <option value="">Sort: Default</option>
-        <option value="near">Sort: Nearest to me</option>
-        <option value="price-asc">Sort: Price, low to high</option>
-        <option value="price-desc">Sort: Price, high to low</option>
-      </select>
       <button class="reset" id="reset" type="button">Clear filters</button>
     </div>
     <div class="row">
@@ -145,7 +141,14 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
 
   <div class="main">
     <div>
-      <p class="result-line" aria-live="polite"><span id="count"></span> <span class="geo-msg" id="geo-msg"></span></p>
+      <div class="list-head">
+        <p class="result-line" aria-live="polite"><span id="count"></span> <span class="geo-msg" id="geo-msg"></span></p>
+        <div class="price-group" role="group" aria-label="Sort" id="sort">
+          <button type="button" aria-pressed="false" data-s="near">Nearest</button>
+          <button type="button" aria-pressed="false" data-s="price-asc" aria-label="Price, low to high">$ → $$$$</button>
+          <button type="button" aria-pressed="true" data-s="price-desc" aria-label="Price, high to low">$$$$ → $</button>
+        </div>
+      </div>
       <ul class="list" id="list"></ul>
     </div>
     <div class="map-wrap">
@@ -227,7 +230,7 @@ const GROUPS = [
 ];
 const inGroup = (r, g) => GROUPS.find(x => x[0] === g)[1].test(r.cuisine);
 
-const state = { q: "", cuisine: "", prices: new Set(), hood: "", sort: "", here: null };
+const state = { q: "", cuisine: "", prices: new Set(), hood: "", sort: "price-desc", here: null };
 const $ = s => document.querySelector(s);
 
 // Straight-line distance in miles (haversine)
@@ -238,9 +241,14 @@ function miles(a, b) {
 }
 const fmtMi = d => d < 0.1 ? "<0.1 mi" : d < 10 ? d.toFixed(1) + " mi" : Math.round(d) + " mi";
 
-// Ask the device for its location; on failure fall back to the default order
+function setSort(s) {
+  state.sort = s;
+  document.querySelectorAll("#sort button").forEach(b => b.setAttribute("aria-pressed", b.dataset.s === s));
+}
+
+// Ask the device for its location; on failure fall back to price, high to low
 function locate() {
-  const fail = msg => { state.sort = ""; $("#sort").value = ""; $("#geo-msg").textContent = msg; render(); };
+  const fail = msg => { setSort("price-desc"); $("#geo-msg").textContent = msg; render(); };
   if (!("geolocation" in navigator)) return fail("Location isn't available on this device.");
   $("#geo-msg").textContent = "Finding your location…";
   navigator.geolocation.getCurrentPosition(
@@ -273,8 +281,9 @@ function setupControls() {
 
   $("#q").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
   $("#cuisine").addEventListener("change", e => { state.cuisine = e.target.value; render(); });
-  $("#sort").addEventListener("change", e => {
-    state.sort = e.target.value; $("#geo-msg").textContent = "";
+  $("#sort").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    setSort(b.dataset.s); $("#geo-msg").textContent = "";
     if (state.sort === "near") locate(); else render();
   });
   $("#prices").addEventListener("click", e => {
