@@ -110,6 +110,56 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .leaflet-control-attribution { font-size: 10px; }
 #map.dark-tiles .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6); }
 .leaflet-bar a { background: var(--surface); color: var(--fg); border-color: var(--line); }
+/* Accounts + community reviews */
+.account { display: flex; justify-content: flex-end; align-items: center; gap: 10px; min-height: 30px; margin-bottom: 6px; font-size: 13.5px; color: var(--muted); }
+.account:empty { display: none; }
+.account b { color: var(--fg); font-weight: 600; }
+[hidden] { display: none !important; }
+.btn { font: inherit; font-size: 13.5px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.btn.primary { background: var(--brick); border-color: var(--brick); color: #fff; font-weight: 600; }
+.btn:disabled { opacity: .55; cursor: default; }
+.item .rate { font: inherit; font-size: 12.5px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 1px 9px; cursor: pointer; }
+.item .rate:hover { border-color: var(--brick); }
+.item .rate .star, .stars { color: #d9902f; }
+.item .rate small { color: var(--muted); font-weight: 400; }
+.item .rate.none { font-weight: 500; color: var(--brick); }
+dialog.dlg { width: min(560px, calc(100vw - 32px)); max-height: min(88vh, 900px); overflow: auto; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--fg); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+dialog.dlg.narrow { width: min(380px, calc(100vw - 32px)); }
+dialog.dlg::backdrop { background: rgba(10, 12, 14, .5); }
+.dlg-body { padding: 18px 20px 20px; }
+.dlg-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 12px; }
+.dlg-head h2 { font-family: var(--font-display); font-weight: 600; font-size: 24px; line-height: 1.15; margin: 0; }
+.dlg-sub { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+.x { font-size: 22px; line-height: 1; border: 0; background: none; color: var(--muted); cursor: pointer; padding: 2px 6px; }
+.tabs { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.tabs button { font: inherit; font-size: 14px; border: 0; background: none; color: var(--muted); padding: 6px 10px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--brick); font-weight: 600; }
+.field { display: grid; gap: 4px; font-size: 13px; font-weight: 500; margin-bottom: 12px; }
+.field input, .field textarea { font: inherit; font-size: 15px; font-weight: 400; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); width: 100%; }
+.field textarea { resize: vertical; min-height: 80px; }
+.hint { font-size: 12px; color: var(--muted); margin: -6px 0 12px; }
+.form-err { font-size: 13px; color: var(--brick); margin: 0 0 10px; min-height: 0; }
+.form-err:empty { display: none; }
+.mine { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 16px; background: var(--bg); }
+.mine h3 { font-size: 14px; margin: 0 0 8px; }
+.star-pick { display: inline-flex; gap: 2px; margin-bottom: 10px; }
+.star-pick button { font-size: 28px; line-height: 1; border: 0; background: none; padding: 0 2px; cursor: pointer; color: var(--dot-dim); }
+.star-pick button.on { color: #d9902f; }
+.thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; }
+.thumb { position: relative; width: 84px; height: 84px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb button { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font-size: 14px; line-height: 1; cursor: pointer; }
+.file-btn { display: inline-flex; align-items: center; gap: 6px; }
+.file-btn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.form-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.rv-list { list-style: none; margin: 0; padding: 0; }
+.rv { padding: 12px 0; border-top: 1px solid var(--line); }
+.rv-top { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 13px; color: var(--muted); }
+.rv-top b { color: var(--fg); }
+.rv p { margin: 4px 0 0; white-space: pre-line; overflow-wrap: anywhere; }
+.rv .thumbs { margin-bottom: 0; }
+.rv-summary { font-size: 14px; margin: 0 0 6px; }
+.muted { color: var(--muted); }
 footer { margin-top: 32px; font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; }
 footer code { font-family: var(--font-mono); font-size: 12px; }
 
@@ -125,6 +175,7 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
 <body>
 
 <div class="wrap">
+  <div class="account" id="account" aria-live="polite"></div>
   <header>
     <div>
       <p class="eyebrow">Boston Lifesaver · Cambridge &amp; Boston</p>
@@ -185,6 +236,36 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
   </footer>
 </div>
 
+<dialog class="dlg narrow" id="auth-dlg" aria-labelledby="auth-title">
+  <form class="dlg-body" id="auth-form" novalidate>
+    <div class="dlg-head"><h2 id="auth-title">Sign in</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-mode="signin" aria-selected="true">Sign in</button>
+      <button type="button" role="tab" data-mode="signup" aria-selected="false">Create account</button>
+    </div>
+    <label class="field">Username
+      <input id="auth-user" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20" required>
+    </label>
+    <label class="field">Password
+      <input id="auth-pass" name="password" type="password" autocomplete="current-password" required>
+    </label>
+    <p class="hint" id="auth-hint" hidden>3–20 letters, numbers or _ · password at least 8 characters. There's no password reset, so keep it somewhere safe.</p>
+    <p class="form-err" id="auth-err" role="alert"></p>
+    <button class="btn primary" type="submit" id="auth-submit">Sign in</button>
+  </form>
+</dialog>
+
+<dialog class="dlg" id="rev-dlg" aria-labelledby="rev-title">
+  <div class="dlg-body">
+    <div class="dlg-head"><div><h2 id="rev-title"></h2><p class="dlg-sub" id="rev-sub"></p></div><button type="button" class="x" data-close aria-label="Close">×</button></div>
+    <p class="rv-summary" id="rev-summary"></p>
+    <div id="rev-mine"></div>
+    <ul class="rv-list" id="rev-list"></ul>
+  </div>
+</dialog>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 const R = [
@@ -528,7 +609,7 @@ function render(opts = {}) {
       ${near ? `<span class="dist" aria-label="${fmtMi(r.d)} away">${fmtMi(r.d)}</span>` : ""}
       <span class="meta"><b>${esc(r.cuisine)}</b> · ${esc(r.hood)}</span>
       <span class="addr"><a href="${maps}" target="_blank" rel="noopener">${esc(r.address.replace(/, MA (\d{5})$/, " $1"))}</a>${r.source ? ` · <a class="src" href="${esc(r.source)}" target="_blank" rel="noopener">source</a>` : ""}</span>
-      <span class="reviews">Reviews: <a href="${maps}" target="_blank" rel="noopener" aria-label="${esc(r.name)} reviews on Google">Google ↗</a><a href="${yelp}" target="_blank" rel="noopener" aria-label="${esc(r.name)} reviews on Yelp">Yelp ↗</a></span>
+      <span class="reviews">${rateButton(r)}Reviews: <a href="${maps}" target="_blank" rel="noopener" aria-label="${esc(r.name)} reviews on Google">Google ↗</a><a href="${yelp}" target="_blank" rel="noopener" aria-label="${esc(r.name)} reviews on Yelp">Yelp ↗</a></span>
     </li>`;
   }).join("") : `<li class="empty">No restaurants match these filters. Try clearing one, or use “Clear filters”.</li>`;
   shownIds = new Set(all.map(r => r.id));
@@ -561,6 +642,236 @@ $("#pager").addEventListener("click", e => {
   const top = $("#count").getBoundingClientRect().top;
   if (top < 0) $("#count").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 });
+// ---- Accounts, ratings, reviews and food photos (Supabase; see supabase/README.md) ----
+// Without web/config.js filled in, none of this shows and the page works as before.
+const CFG = window.CE_CONFIG || {};
+const sb = CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase ? window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey) : null;
+const BUCKET = "food-photos", USER_DOMAIN = "users.cambridge-eats.app", MAX_PHOTOS = 3;
+const stats = new Map();   // restaurant id → { avg, count }
+let me = null;             // { id, username } when signed in
+let current = null;        // restaurant open in the reviews dialog
+let draft = null;          // { rating, keep: [paths], added: [{ file, url }], removed: [paths] }
+
+const photoUrl = p => sb.storage.from(BUCKET).getPublicUrl(p).data.publicUrl;
+const starText = n => "★".repeat(n) + `<i class="muted">${"★".repeat(5 - n)}</i>`;
+const fmtDate = s => new Date(s).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+
+function rateButton(r) {
+  if (!sb) return "";
+  const s = stats.get(r.id);
+  return s
+    ? `<button type="button" class="rate" data-rev="${r.id}" aria-label="${esc(r.name)}: ${s.avg} stars from ${s.count} reviews. Read or write a review"><span class="star">★</span> ${s.avg.toFixed(1)} <small>(${s.count})</small></button>`
+    : `<button type="button" class="rate none" data-rev="${r.id}">Rate &amp; review</button>`;
+}
+
+async function loadStats() {
+  const { data, error } = await sb.from("restaurant_stats").select("restaurant_id, avg_rating, review_count");
+  if (error) return console.warn("Couldn't load ratings", error);
+  stats.clear();
+  data.forEach(s => stats.set(s.restaurant_id, { avg: s.avg_rating, count: s.review_count }));
+  render({ keepPage: true, keepMap: true });
+}
+
+// --- account bar + sign-in dialog ---
+function setMe(session) {
+  const u = session && session.user;
+  me = u ? { id: u.id, username: (u.user_metadata && u.user_metadata.username) || u.email.split("@")[0] } : null;
+  $("#account").innerHTML = me
+    ? `<span>Signed in as <b>@${esc(me.username)}</b></span><button type="button" class="btn" id="sign-out">Sign out</button>`
+    : `<button type="button" class="btn" id="sign-in">Sign in</button><button type="button" class="btn primary" id="sign-up">Create account</button>`;
+  if (current && $("#rev-dlg").open) openReviews(current.id);
+}
+let authMode = "signin";
+function setAuthMode(m) {
+  authMode = m;
+  const up = m === "signup";
+  document.querySelectorAll("#auth-dlg [data-mode]").forEach(b => b.setAttribute("aria-selected", b.dataset.mode === m));
+  $("#auth-title").textContent = $("#auth-submit").textContent = up ? "Create account" : "Sign in";
+  $("#auth-pass").autocomplete = up ? "new-password" : "current-password";
+  $("#auth-hint").hidden = !up;
+  $("#auth-err").textContent = "";
+}
+function openAuth(m) { setAuthMode(m); $("#auth-dlg").showModal(); $("#auth-user").focus(); }
+
+async function submitAuth(e) {
+  e.preventDefault();
+  const username = $("#auth-user").value.trim().toLowerCase(), password = $("#auth-pass").value;
+  const err = $("#auth-err"), btn = $("#auth-submit");
+  if (!/^[a-z0-9_]{3,20}$/.test(username)) return err.textContent = "Usernames are 3–20 letters, numbers or underscores.";
+  if (authMode === "signup" && password.length < 8) return err.textContent = "Use a password of at least 8 characters.";
+  if (!password) return err.textContent = "Enter your password.";
+  const email = `${username}@${USER_DOMAIN}`;
+  btn.disabled = true; err.textContent = "";
+  try {
+    const { data, error } = authMode === "signup"
+      ? await sb.auth.signUp({ email, password, options: { data: { username } } })
+      : await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      const m = error.message || "";
+      err.textContent = /already registered|already exists/i.test(m) ? "That username is taken. Try another."
+        : /invalid login credentials/i.test(m) ? "Wrong username or password."
+        : /password/i.test(m) ? m
+        : /rate limit|too many/i.test(m) ? "Too many attempts. Wait a minute and try again."
+        : "Something went wrong: " + m;
+      return;
+    }
+    if (authMode === "signup" && !data.session) {
+      err.textContent = "Account created, but sign-in is waiting for an email confirmation. The site owner needs to turn off “Confirm email” in Supabase.";
+      return;
+    }
+    $("#auth-form").reset(); $("#auth-dlg").close();
+  } finally { btn.disabled = false; }
+}
+
+// --- reviews dialog ---
+async function openReviews(id) {
+  current = R.find(r => r.id === id);
+  $("#rev-title").textContent = current.name;
+  $("#rev-sub").textContent = `${current.cuisine} · ${current.hood} · ${current.price}`;
+  $("#rev-summary").textContent = "";
+  $("#rev-mine").innerHTML = "";
+  $("#rev-list").innerHTML = `<li class="rv muted">Loading reviews…</li>`;
+  if (!$("#rev-dlg").open) $("#rev-dlg").showModal();
+  const { data, error } = await sb.from("reviews")
+    .select("id, user_id, rating, body, photos, created_at, updated_at, profiles(username)")
+    .eq("restaurant_id", id).order("created_at", { ascending: false });
+  if (current.id !== id) return;   // user opened another restaurant meanwhile
+  if (error) { $("#rev-list").innerHTML = `<li class="rv form-err">Couldn't load reviews. Try again later.</li>`; return; }
+
+  const n = data.length, avg = n ? data.reduce((a, r) => a + r.rating, 0) / n : 0;
+  $("#rev-summary").innerHTML = n ? `<span class="stars">${starText(Math.round(avg))}</span> <b>${avg.toFixed(1)}</b> <span class="muted">from ${n} review${n > 1 ? "s" : ""}</span>` : `<span class="muted">No reviews yet. Be the first.</span>`;
+  const mine = me && data.find(r => r.user_id === me.id);
+  renderMine(mine);
+  $("#rev-list").innerHTML = data.map(r => `<li class="rv">
+      <div class="rv-top"><span class="stars" aria-label="${r.rating} out of 5 stars">${starText(r.rating)}</span><b>@${esc(r.profiles ? r.profiles.username : "deleted")}</b><span>${fmtDate(r.created_at)}${r.updated_at && new Date(r.updated_at) - new Date(r.created_at) > 60000 ? " · edited" : ""}</span>${me && r.user_id === me.id ? "<span>· yours</span>" : ""}</div>
+      ${r.body ? `<p>${esc(r.body)}</p>` : ""}
+      ${r.photos.length ? `<div class="thumbs">${r.photos.map(p => `<a class="thumb" href="${esc(photoUrl(p))}" target="_blank" rel="noopener"><img src="${esc(photoUrl(p))}" alt="Food photo from @${esc(r.profiles ? r.profiles.username : "user")} at ${esc(current.name)}" loading="lazy"></a>`).join("")}</div>` : ""}
+    </li>`).join("");
+}
+
+function renderMine(mine) {
+  if (!me) {
+    $("#rev-mine").innerHTML = `<div class="mine form-row"><span>Been here? Sign in to rate it, write a review and add food photos.</span><button type="button" class="btn primary" data-auth="signin">Sign in</button><button type="button" class="btn" data-auth="signup">Create account</button></div>`;
+    return;
+  }
+  draft = { rating: mine ? mine.rating : 0, keep: mine ? mine.photos.slice() : [], added: [], removed: [], existing: !!mine };
+  $("#rev-mine").innerHTML = `<form class="mine" id="rev-form" novalidate>
+      <h3>${mine ? "Your review" : "Rate &amp; review"}</h3>
+      <div class="star-pick" role="radiogroup" aria-label="Your rating">${[1, 2, 3, 4, 5].map(v => `<button type="button" role="radio" data-v="${v}" aria-label="${v} star${v > 1 ? "s" : ""}">★</button>`).join("")}</div>
+      <label class="field">Review (optional)<textarea id="rev-body" maxlength="1000" rows="3" placeholder="What did you order? How was it?">${mine ? esc(mine.body) : ""}</textarea></label>
+      <div class="thumbs" id="rev-thumbs"></div>
+      <div class="form-row" style="margin-bottom:12px">
+        <label class="btn file-btn" id="add-photo">📷 Add food photos<input type="file" id="rev-files" accept="image/*" multiple></label>
+        <span class="muted" style="font-size:12px">Up to ${MAX_PHOTOS}</span>
+      </div>
+      <p class="form-err" id="rev-err" role="alert"></p>
+      <div class="form-row">
+        <button type="submit" class="btn primary" id="rev-save">${mine ? "Save changes" : "Post review"}</button>
+        ${mine ? `<button type="button" class="reset" id="rev-delete" data-id="${mine.id}">Delete my review</button>` : ""}
+      </div>
+    </form>`;
+  paintStars(); paintThumbs();
+}
+function paintStars() {
+  document.querySelectorAll(".star-pick button").forEach(b => {
+    const v = +b.dataset.v;
+    b.classList.toggle("on", v <= draft.rating);
+    b.setAttribute("aria-checked", v === draft.rating);
+  });
+}
+function paintThumbs() {
+  const items = draft.keep.map(p => ({ src: photoUrl(p), key: "k:" + p })).concat(draft.added.map((a, i) => ({ src: a.url, key: "a:" + i })));
+  $("#rev-thumbs").innerHTML = items.map(t => `<div class="thumb"><img src="${esc(t.src)}" alt="Your food photo"><button type="button" data-rm="${esc(t.key)}" aria-label="Remove photo">×</button></div>`).join("");
+  $("#add-photo").hidden = items.length >= MAX_PHOTOS;
+}
+
+// Shrink photos in the browser (max 1600 px JPEG) so uploads stay fast and small
+async function shrink(file) {
+  const img = await createImageBitmap(file);
+  const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  return new Promise((ok, fail) => c.toBlob(b => b ? ok(b) : fail(new Error("unreadable")), "image/jpeg", 0.85));
+}
+
+async function saveReview(e) {
+  e.preventDefault();
+  const err = $("#rev-err"), btn = $("#rev-save");
+  if (!draft.rating) return err.textContent = "Pick a star rating first.";
+  btn.disabled = true; err.textContent = ""; btn.textContent = "Saving…";
+  const uploaded = [];
+  try {
+    for (const a of draft.added) {
+      let blob;
+      try { blob = await shrink(a.file); } catch { throw new Error(`Couldn't read “${a.file.name}”. Try a JPEG or PNG photo.`); }
+      const path = `${me.id}/${current.id}/${crypto.randomUUID()}.jpg`;
+      const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: "image/jpeg" });
+      if (error) throw new Error("Photo upload failed: " + error.message);
+      uploaded.push(path);
+    }
+    const { error } = await sb.from("reviews").upsert({
+      restaurant_id: current.id, user_id: me.id, rating: draft.rating,
+      body: $("#rev-body").value.trim(), photos: draft.keep.concat(uploaded), updated_at: new Date().toISOString(),
+    }, { onConflict: "restaurant_id,user_id" });
+    if (error) throw new Error("Couldn't save your review: " + error.message);
+    if (draft.removed.length) await sb.storage.from(BUCKET).remove(draft.removed);
+    const previews = draft.added.map(a => a.url);
+    await openReviews(current.id); loadStats();
+    previews.forEach(u => URL.revokeObjectURL(u));   // free previews only once they're off screen
+  } catch (x) {
+    if (uploaded.length) sb.storage.from(BUCKET).remove(uploaded);   // don't leave orphaned files
+    err.textContent = x.message; btn.disabled = false; btn.textContent = draft.existing ? "Save changes" : "Post review";
+  }
+}
+
+async function deleteReview(id) {
+  if (!confirm("Delete your review and its photos?")) return;
+  const { data, error } = await sb.from("reviews").delete().eq("id", id).select("photos");
+  if (error) return $("#rev-err").textContent = "Couldn't delete: " + error.message;
+  const paths = data && data[0] ? data[0].photos : [];
+  if (paths.length) await sb.storage.from(BUCKET).remove(paths);
+  await openReviews(current.id); loadStats();
+}
+
+if (sb) {
+  list.addEventListener("click", e => { const b = e.target.closest("[data-rev]"); if (b) openReviews(+b.dataset.rev); });
+  $("#account").addEventListener("click", e => {
+    if (e.target.closest("#sign-in")) openAuth("signin");
+    else if (e.target.closest("#sign-up")) openAuth("signup");
+    else if (e.target.closest("#sign-out")) sb.auth.signOut();
+  });
+  document.querySelectorAll("dialog.dlg").forEach(d => d.addEventListener("click", e => {
+    if (e.target === d || e.target.closest("[data-close]")) d.close();   // backdrop or ×
+  }));
+  $("#rev-dlg").addEventListener("close", () => { current = null; });
+  $("#auth-dlg").addEventListener("click", e => { const t = e.target.closest("[data-mode]"); if (t) setAuthMode(t.dataset.mode); });
+  $("#auth-form").addEventListener("submit", submitAuth);
+  $("#rev-mine").addEventListener("click", e => {
+    const a = e.target.closest("[data-auth]"); if (a) return openAuth(a.dataset.auth);
+    const s = e.target.closest(".star-pick button"); if (s) { draft.rating = +s.dataset.v; paintStars(); $("#rev-err").textContent = ""; return; }
+    const rm = e.target.closest("[data-rm]");
+    if (rm) {
+      const [kind, v] = [rm.dataset.rm.slice(0, 1), rm.dataset.rm.slice(2)];
+      if (kind === "k") { draft.keep = draft.keep.filter(p => p !== v); draft.removed.push(v); }
+      else { const [a] = draft.added.splice(+v, 1); URL.revokeObjectURL(a.url); }
+      return paintThumbs();
+    }
+    const d = e.target.closest("#rev-delete"); if (d) deleteReview(+d.dataset.id);
+  });
+  $("#rev-mine").addEventListener("change", e => {
+    if (e.target.id !== "rev-files") return;
+    const room = MAX_PHOTOS - draft.keep.length - draft.added.length;
+    const files = [...e.target.files].filter(f => f.type.startsWith("image/"));
+    files.slice(0, room).forEach(file => draft.added.push({ file, url: URL.createObjectURL(file) }));
+    $("#rev-err").textContent = files.length > room ? `Only ${MAX_PHOTOS} photos per review; extra ones were skipped.` : "";
+    e.target.value = ""; paintThumbs();
+  });
+  $("#rev-mine").addEventListener("submit", saveReview);
+  sb.auth.onAuthStateChange((_event, session) => setTimeout(() => setMe(session)));   // defer: no Supabase calls inside the callback
+  loadStats();
+}
+
 $("#total").textContent = R.length;
 setupControls(); render();
 </script>
