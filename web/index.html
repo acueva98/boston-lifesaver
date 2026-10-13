@@ -124,6 +124,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .account { display: flex; justify-content: flex-end; align-items: center; gap: 10px; min-height: 30px; margin-bottom: 6px; font-size: 13.5px; color: var(--muted); }
 .account:empty { display: none; }
 .account b { color: var(--fg); font-weight: 600; }
+.account { flex-wrap: wrap; }
+.account .btn { white-space: nowrap; }
 [hidden] { display: none !important; }
 .btn { font: inherit; font-size: 13.5px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
 .btn.primary { background: var(--brick); border-color: var(--brick); color: #fff; font-weight: 600; }
@@ -260,9 +262,29 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
     <label class="field">Password
       <input id="auth-pass" name="password" type="password" autocomplete="current-password" required>
     </label>
-    <p class="hint" id="auth-hint" hidden>3–20 letters, numbers or _ · password at least 8 characters. There's no password reset, so keep it somewhere safe.</p>
+    <p class="hint" id="auth-hint" hidden>3–20 letters, numbers or _ · password at least 8 characters. You can change it later while signed in, but a forgotten password can't be reset, so keep it somewhere safe.</p>
     <p class="form-err" id="auth-err" role="alert"></p>
     <button class="btn primary" type="submit" id="auth-submit">Sign in</button>
+  </form>
+</dialog>
+
+<dialog class="dlg narrow" id="pw-dlg" aria-labelledby="pw-title">
+  <form class="dlg-body" id="pw-form" novalidate>
+    <div class="dlg-head"><h2 id="pw-title">Change password</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+    <input type="text" id="pw-user" autocomplete="username" hidden>
+    <label class="field">Current password
+      <input id="pw-current" type="password" autocomplete="current-password" required>
+    </label>
+    <label class="field">New password
+      <input id="pw-new" type="password" autocomplete="new-password" minlength="8" required>
+    </label>
+    <label class="field">Repeat new password
+      <input id="pw-repeat" type="password" autocomplete="new-password" minlength="8" required>
+    </label>
+    <p class="hint">At least 8 characters.</p>
+    <p class="form-err" id="pw-err" role="alert"></p>
+    <p class="hint" id="pw-ok" role="status" hidden>Password changed.</p>
+    <button class="btn primary" type="submit" id="pw-submit">Change password</button>
   </form>
 </dialog>
 
@@ -740,7 +762,7 @@ function setMe(session) {
   const u = session && session.user;
   me = u ? { id: u.id, username: (u.user_metadata && u.user_metadata.username) || u.email.split("@")[0] } : null;
   $("#account").innerHTML = me
-    ? `<span>Signed in as <b>@${esc(me.username)}</b></span><button type="button" class="btn" id="sign-out">Sign out</button>`
+    ? `<span>Signed in as <b>@${esc(me.username)}</b></span><button type="button" class="btn" id="change-pw">Change password</button><button type="button" class="btn" id="sign-out">Sign out</button>`
     : `<button type="button" class="btn" id="sign-in">Sign in</button><button type="button" class="btn primary" id="sign-up">Create account</button>`;
   if (current && $("#rev-dlg").open) openReviews(current.id);
 }
@@ -783,6 +805,40 @@ async function submitAuth(e) {
       return;
     }
     $("#auth-form").reset(); $("#auth-dlg").close();
+  } finally { btn.disabled = false; }
+}
+
+// --- change password (asks for the current one first, so an unattended signed-in device can't be taken over) ---
+function openChangePw() {
+  $("#pw-form").reset(); $("#pw-err").textContent = ""; $("#pw-ok").hidden = true;
+  $("#pw-user").value = me.username;   // lets password managers file the new password under the right account
+  $("#pw-dlg").showModal(); $("#pw-current").focus();
+}
+async function submitChangePw(e) {
+  e.preventDefault();
+  const cur = $("#pw-current").value, next = $("#pw-new").value, again = $("#pw-repeat").value;
+  const err = $("#pw-err"), btn = $("#pw-submit");
+  $("#pw-ok").hidden = true;
+  if (!cur) return err.textContent = "Enter your current password.";
+  if (next.length < 8) return err.textContent = "Use a new password of at least 8 characters.";
+  if (next !== again) return err.textContent = "The new passwords don't match.";
+  if (next === cur) return err.textContent = "The new password must be different from the current one.";
+  btn.disabled = true; err.textContent = "";
+  try {
+    const { data: s } = await sb.auth.getSession();
+    const email = s.session && s.session.user.email;
+    if (!email) return err.textContent = "You've been signed out. Sign in again first.";
+    const check = await sb.auth.signInWithPassword({ email, password: cur });
+    if (check.error) return err.textContent = /invalid login credentials/i.test(check.error.message) ? "Current password is wrong." : "Couldn't check your password: " + check.error.message;
+    const { error } = await sb.auth.updateUser({ password: next });
+    if (error) {
+      const m = error.message || "";
+      return err.textContent = /different from the old|same_password/i.test(m) ? "The new password must be different from the current one."
+        : /reauthenticat|nonce/i.test(m) ? "Supabase is set to require an email check for password changes. The site owner needs to turn off “Secure password change”."
+        : "Couldn't change the password: " + m;
+    }
+    $("#pw-form").reset(); $("#pw-ok").hidden = false;
+    setTimeout(() => { if ($("#pw-dlg").open && !$("#pw-ok").hidden) $("#pw-dlg").close(); }, 1500);
   } finally { btn.disabled = false; }
 }
 
@@ -902,8 +958,10 @@ if (sb) {
   $("#account").addEventListener("click", e => {
     if (e.target.closest("#sign-in")) openAuth("signin");
     else if (e.target.closest("#sign-up")) openAuth("signup");
+    else if (e.target.closest("#change-pw")) openChangePw();
     else if (e.target.closest("#sign-out")) sb.auth.signOut();
   });
+  $("#pw-form").addEventListener("submit", submitChangePw);
   document.querySelectorAll("dialog.dlg").forEach(d => d.addEventListener("click", e => {
     if (e.target === d || e.target.closest("[data-close]")) d.close();   // backdrop or ×
   }));
