@@ -558,6 +558,13 @@ if (hasMap) {
   map = L.map("map", { scrollWheelZoom: false });
   setTiles();
   dark.addEventListener("change", () => { setTiles(); styleZones(); render({ keepPage: true, keepMap: true }); });
+} else {
+  $("#map").innerHTML = '<p style="padding:16px;color:var(--muted)">The map could not load. The list still works.</p>';
+}
+
+// Draw zones and pins for the restaurants in R (called once the data is loaded)
+function drawMapData() {
+  if (!hasMap) return;
   map.fitBounds(L.latLngBounds(R.map(r => [r.lat, r.lng])), { padding: [24, 24] });
 
   const byHood = {};
@@ -579,8 +586,6 @@ if (hasMap) {
     m.on("click", e => { L.DomEvent.stopPropagation(e); jump(r.id); });
     markers.set(r.id, m);
   });
-} else {
-  $("#map").innerHTML = '<p style="padding:16px;color:var(--muted)">The map could not load. The list still works.</p>';
 }
 
 function hot(id, on) {
@@ -677,6 +682,33 @@ $("#pager").addEventListener("click", e => {
 // Without web/config.js filled in, none of this shows and the page works as before.
 const CFG = window.CE_CONFIG || {};
 const sb = CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase ? window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey) : null;
+
+// Restaurants and deals come from the Supabase tables `restaurants` and `deals` (edit them in the Table Editor).
+// The R and DEALS lists embedded above are a backup copy, used only if Supabase can't be reached.
+async function loadFromSupabase() {
+  if (!sb) return;
+  try {
+    const timeout = new Promise((_, no) => setTimeout(() => no(new Error("timed out")), 5000));
+    const [rs, ds] = await Promise.race([Promise.all([
+      sb.from("restaurants").select("id, name, neighborhood, cuisine, address, price_range, lat, lng, source, is_closed, closed_source").order("id"),
+      sb.from("deals").select("restaurant_id, type, description, source_url, last_checked").order("id"),
+    ]), timeout]);
+    if (rs.error || ds.error) throw rs.error || ds.error;
+    if (!rs.data.length) throw new Error("restaurants table is empty");
+    R.length = 0;
+    rs.data.forEach(r => R.push({ id: r.id, name: r.name, hood: r.neighborhood, cuisine: r.cuisine, address: r.address,
+      price: r.price_range, lat: r.lat, lng: r.lng, source: r.source || "" }));
+    const deals = {}, closed = {};
+    rs.data.forEach(r => { if (r.is_closed && r.closed_source) closed[r.id] = r.closed_source; });
+    ds.data.forEach(d => (deals[d.restaurant_id] = deals[d.restaurant_id] || []).push({ type: d.type, text: d.description, source: d.source_url }));
+    DEALS.deals = deals; DEALS.closed = closed;
+    const last = ds.data.map(d => d.last_checked).sort().pop();
+    if (last) DEALS.checked = last;
+  } catch (e) {
+    console.warn("Couldn't load restaurants from Supabase; using the built-in copy.", e);
+  }
+}
+
 const BUCKET = "food-photos", USER_DOMAIN = "users.cambridge-eats.app", MAX_PHOTOS = 3;
 const stats = new Map();   // restaurant id → { avg, count }
 let me = null;             // { id, username } when signed in
@@ -900,11 +932,14 @@ if (sb) {
   });
   $("#rev-mine").addEventListener("submit", saveReview);
   sb.auth.onAuthStateChange((_event, session) => setTimeout(() => setMe(session)));   // defer: no Supabase calls inside the callback
-  loadStats();
 }
 
-$("#total").textContent = R.length;
-setupControls(); render();
+loadFromSupabase().then(() => {
+  drawMapData();
+  $("#total").textContent = R.length;
+  setupControls(); render();
+  if (sb) loadStats();
+});
 </script>
 </body>
 </html>
