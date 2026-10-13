@@ -1,5 +1,7 @@
 # Restaurant data
 
+> **Since Oct 13, 2026 the live data is in Supabase** (tables `restaurants` and `deals`; see [`supabase/README.md`](../supabase/README.md)). Edit it there. The files here are a backup snapshot and the source for the copy built into `web/index.html`.
+
 `restaurants.json` and `restaurants.csv` hold the same list of restaurants in Cambridge and in Boston's Fenway and Back Bay. The website (`web/index.html`) shows this list.
 
 Last updated: October 5, 2026. 102 restaurants.
