@@ -24,6 +24,8 @@
   --road: #cfcac0;
   --dot: #a5432b;
   --dot-dim: #c9c3b8;
+  --deal-bg: #eaf3e3;
+  --deal-ink: #2f6a1f;
   --font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
   --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -32,13 +34,13 @@
   :root:not([data-theme="light"]) {
     --bg: #141719; --surface: #1c2023; --fg: #ebe8e2; --muted: #9aa2a8; --line: #2e3438;
     --brick: #e07b5f; --brick-soft: #3a2420; --river: #24445a; --river-ink: #8fb8d4;
-    --road: #3a4045; --dot: #e07b5f; --dot-dim: #4a5156; color-scheme: dark;
+    --road: #3a4045; --dot: #e07b5f; --dot-dim: #4a5156; --deal-bg: #1f2d1b; --deal-ink: #9fd08a; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #141719; --surface: #1c2023; --fg: #ebe8e2; --muted: #9aa2a8; --line: #2e3438;
   --brick: #e07b5f; --brick-soft: #3a2420; --river: #24445a; --river-ink: #8fb8d4;
-  --road: #3a4045; --dot: #e07b5f; --dot-dim: #4a5156; color-scheme: dark;
+  --road: #3a4045; --dot: #e07b5f; --dot-dim: #4a5156; --deal-bg: #1f2d1b; --deal-ink: #9fd08a; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
@@ -98,6 +100,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .price i { font-style: normal; color: var(--dot-dim); }
 .dist { font-family: var(--font-mono); font-size: 12px; color: var(--river-ink); grid-column: 2; grid-row: 2; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .geo-msg { color: var(--brick); }
+.item .deals { grid-column: 1 / -1; display: grid; gap: 4px; margin: 4px 0 2px; }
+.deal { font-size: 13px; line-height: 1.4; background: var(--deal-bg); border-radius: 6px; padding: 4px 9px; }
+.deal b { color: var(--deal-ink); font-weight: 600; margin-right: 4px; }
+.deal a { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.item .closed { grid-column: 1 / -1; font-size: 12.5px; color: var(--brick); }
+.item .closed a { color: inherit; }
+.chip.deal-chip[aria-pressed="false"] { border-color: var(--deal-ink); color: var(--deal-ink); }
+.chip.deal-chip[aria-pressed="true"] { background: var(--deal-ink); border-color: var(--deal-ink); color: var(--bg); }
 .empty { padding: 28px 10px; color: var(--muted); }
 
 .map-card { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
@@ -193,6 +203,7 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
       </label>
       <select id="cuisine" aria-label="Cuisine"></select>
       <div class="price-group" role="group" aria-label="Price" id="prices"></div>
+      <button class="chip deal-chip" id="deals-only" type="button" aria-pressed="false">🏷 Deals only <small id="deal-count"></small></button>
       <button class="reset" id="reset" type="button">Clear filters</button>
     </div>
     <div class="row">
@@ -373,6 +384,18 @@ const R = [
 [102, "Andala Coffee House", "Central Square", "Middle Eastern / Cafe", "286 Franklin St, Cambridge, MA 02139", "$$", 42.3626, -71.103, "https://cambridgeusa.org/listing/andala-coffee-house"]
 ].map(([id,name,hood,cuisine,address,price,lat,lng,source]) => ({id,name,hood,cuisine,address,price,lat,lng,source}));
 
+// Deals, generated from data/deals.json (each one links to the page it was found on)
+/* DEALS:START */
+const DEALS = {"checked":"2026-10-13","deals":{"1":[{"type":"lunch","text":"Chef's Lunch Prix Fixe on weekdays: 3 courses, $55 per person","source":"https://www.harvestcambridge.com/menus"}],"3":[{"type":"prix-fixe","text":"Pre Dusk prix fixe Mon–Wed 5–7pm: $55 for starter, main and sweet; changes weekly","source":"https://www.bar-enza.com/menus"}],"6":[{"type":"rewards","text":"Loyalty program: 1 point per $1; 150 points = $10 off next visit","source":"https://www.thehourlycambridge.com/"}],"9":[{"type":"late-night","text":"Dollar oysters late night: Sun–Thu 9–11pm, Fri–Sat 10pm–midnight (not on special events/holidays)","source":"https://www.russellhousecambridge.com/menus"},{"type":"rewards","text":"Loyalty program: 1 point per $1; 150 points = $10 off next visit","source":"https://www.russellhousecambridge.com/"}],"14":[{"type":"happy-hour","text":"Oyster hour daily 5–6pm: oysters half price","source":"https://www.puritancambridge.com/oysterbar"}],"24":[{"type":"rewards","text":"&Thrive Perks app program (no points): birthday gift, surprise perks, $5 off entree for joining","source":"https://www.lifealive.com/thrive"}],"51":[{"type":"rewards","text":"NAYA app/online rewards account; $3 reward on your first order","source":"https://www.eatnaya.com"}],"57":[{"type":"weekly-special","text":"$1 oysters all day every Monday (Fenway and Southie locations)","source":"https://www.boston.com/food/restaurants/2025/05/27/where-to-get-1-oysters-every-day-of-the-week-in-boston/"}],"58":[{"type":"lunch","text":"Work from Shy Bird: weekdays until 3pm, $20.75 for breakfast or lunch + bottomless coffee, wifi","source":"https://www.shybird.com/work-from-shy-bird/"}],"64":[{"type":"rewards","text":"Rewards: earn points on online orders, redeem for free food","source":"https://www.donttellaunty.com/"}],"68":[{"type":"weekly-special","text":"Symposium Wednesdays 5–9:30pm at the bar: 4 rotating Greek wines, 2oz taste of all four for a set price","source":"https://www.krasiboston.com/symposium-wednesday"}],"69":[{"type":"rewards","text":"Greco Rewards app: earn points on every order, unlock perks","source":"https://www.grecotrulygreek.com/"}],"75":[{"type":"happy-hour","text":"Happy hour at Terra (rooftop) Mon–Fri 4–6pm","source":"https://www.eataly.com/us_en/stores/boston/restaurants"}],"78":[{"type":"lunch","text":"Power Lunch $25 (Caesar, fries, spritz) on weekday lunch menu, Mon–Fri 11:30am–4pm","source":"https://www.sonsieboston.com/menus"}],"87":[{"type":"lunch","text":"Weekday lunch Tue–Fri 11:30am–3pm (excl. holidays): entrées $17.50 with soup; rice not included","source":"https://www.sumiaohunan.com/"}],"91":[{"type":"rewards","text":"CAVA Rewards: earn points on app/web orders; Sea, Sand (1,500 pts) and Sun (4,500 pts) tiers","source":"https://www.merca20.com/cava-revamps-its-rewards-program-heres-how-it-works/"}],"94":[{"type":"happy-hour","text":"Happy hour at the bar, 2–6pm daily: $1 oysters, 50¢ littlenecks, $2 shrimp cocktail. Hours changing, check site","source":"https://www.legalseafoods.com/happy-hour/"}]},"closed":{"17":"https://www.boston.com/food/restaurants/2021/11/04/bisq-in-cambridge-has-permanently-closed","40":"https://www.thecrimson.com/article/2023/9/8/friendly-toast-opens/"}};
+/* DEALS:END */
+const DEAL_LABEL = { "happy-hour": "Happy hour", "lunch": "Lunch deal", "prix-fixe": "Prix fixe", "weekly-special": "Weekly special", "late-night": "Late night", "discount": "Discount", "rewards": "Rewards" };
+function dealsHTML(r) {
+  const ds = DEALS.deals[r.id] || [], closed = DEALS.closed[r.id];
+  const host = u => { try { return new URL(u).hostname.replace(/^www./, ""); } catch (e) { return "source"; } };
+  return (closed ? `<span class="closed">⚠ Reported closed · <a href="${esc(closed)}" target="_blank" rel="noopener">source</a></span>` : "") +
+    (ds.length ? `<span class="deals">${ds.map(d => `<span class="deal"><b>${DEAL_LABEL[d.type] || "Deal"}</b>${esc(d.text)} <a href="${esc(d.source)}" target="_blank" rel="noopener" title="Checked ${esc(DEALS.checked)}. Deals change, confirm before you go.">${esc(host(d.source))} ↗</a></span>`).join("")}</span>` : "");
+}
+
 // Broad cuisine groups for the dropdown (the raw cuisine text stays on each row)
 const GROUPS = [
   ["Seafood & sushi", /seafood|sushi|oyster|lobster|fish/i],
@@ -388,7 +411,7 @@ const GROUPS = [
 ];
 const inGroup = (r, g) => GROUPS.find(x => x[0] === g)[1].test(r.cuisine);
 
-const state = { q: "", cuisine: "", prices: new Set(), hood: "", page: 1, per: 10, sort: "price-desc", here: null };
+const state = { q: "", cuisine: "", prices: new Set(), hood: "", dealsOnly: false, page: 1, per: 10, sort: "price-desc", here: null };
 try { const p = +localStorage.getItem("perPage"); if (p === 10 || p === 20) state.per = p; } catch (e) {}
 const $ = s => document.querySelector(s);
 
@@ -429,8 +452,10 @@ function results() {
 }
 
 const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const dealsFor = r => (DEALS.deals[r.id] || []);
 const matches = r =>
-  (!state.q || (r.name + " " + r.cuisine + " " + r.address + " " + r.hood).toLowerCase().includes(state.q)) &&
+  (!state.q || (r.name + " " + r.cuisine + " " + r.address + " " + r.hood + " " + dealsFor(r).map(d => DEAL_LABEL[d.type] + " " + d.text).join(" ")).toLowerCase().includes(state.q)) &&
+  (!state.dealsOnly || dealsFor(r).length > 0) &&
   (!state.cuisine || inGroup(r, state.cuisine)) &&
   (!state.prices.size || state.prices.has(r.price)) &&
   (!state.hood || r.hood === state.hood);
@@ -465,8 +490,13 @@ function setupControls() {
     state.hood = b.dataset.h;
     document.querySelectorAll("#hoods .chip").forEach(c => c.setAttribute("aria-pressed", c === b)); render();
   });
+  $("#deal-count").textContent = R.filter(r => dealsFor(r).length).length;
+  $("#deals-only").addEventListener("click", e => {
+    state.dealsOnly = !state.dealsOnly; e.currentTarget.setAttribute("aria-pressed", state.dealsOnly); render();
+  });
   $("#reset").addEventListener("click", () => {
-    state.q = ""; state.cuisine = ""; state.prices.clear(); state.hood = "";
+    state.q = ""; state.cuisine = ""; state.prices.clear(); state.hood = ""; state.dealsOnly = false;
+    $("#deals-only").setAttribute("aria-pressed", "false");
     $("#q").value = ""; $("#cuisine").value = "";
     document.querySelectorAll("#prices button").forEach(b => b.setAttribute("aria-pressed", "false"));
     document.querySelectorAll("#hoods .chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.h === ""));
@@ -609,6 +639,7 @@ function render(opts = {}) {
       ${near ? `<span class="dist" aria-label="${fmtMi(r.d)} away">${fmtMi(r.d)}</span>` : ""}
       <span class="meta"><b>${esc(r.cuisine)}</b> · ${esc(r.hood)}</span>
       <span class="addr"><a href="${maps}" target="_blank" rel="noopener">${esc(r.address.replace(/, MA (\d{5})$/, " $1"))}</a>${r.source ? ` · <a class="src" href="${esc(r.source)}" target="_blank" rel="noopener">source</a>` : ""}</span>
+      ${dealsHTML(r)}
       <span class="reviews">${rateButton(r)}Reviews: <a href="${maps}" target="_blank" rel="noopener" aria-label="${esc(r.name)} reviews on Google">Google ↗</a><a href="${yelp}" target="_blank" rel="noopener" aria-label="${esc(r.name)} reviews on Yelp">Yelp ↗</a></span>
     </li>`;
   }).join("") : `<li class="empty">No restaurants match these filters. Try clearing one, or use “Clear filters”.</li>`;
