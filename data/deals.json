@@ -1,0 +1,846 @@
+{
+  "last_checked": "2026-10-13",
+  "note": "Recurring deals found on restaurant websites or local press (2025–2026). Each deal links to its source. Deals change; confirm before going.",
+  "restaurants": [
+    {
+      "id": 1,
+      "name": "Harvest",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "lunch",
+          "text": "Chef's Lunch Prix Fixe on weekdays: 3 courses, $55 per person",
+          "source": "https://www.harvestcambridge.com/menus",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Bites & Flights bar menu daily 3pm-close (bar) and 3-5pm (dining room/patio) is not described as discounted, so not listed as a deal."
+    },
+    {
+      "id": 2,
+      "name": "Alden & Harlow",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists no happy hour or late-night deal; only regular dinner/brunch hours."
+    },
+    {
+      "id": 3,
+      "name": "Bar Enza",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "prix-fixe",
+          "text": "Pre Dusk prix fixe Mon–Wed 5–7pm: $55 for starter, main and sweet; changes weekly",
+          "source": "https://www.bar-enza.com/menus",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Official site is bar-enza.com. Past 'Aperitivi at Enza' were ticketed one-off events (ignored)."
+    },
+    {
+      "id": 4,
+      "name": "Cafe Sushi",
+      "status": "none",
+      "deals": [],
+      "notes": "Reopened Dec 2025 as Cafe Sushi Nisei (sake bar) + Cafe Sushi Shoten takeout; omakase retired, dollar sushi Sundays described as past (Boston Magazine 2025-12)."
+    },
+    {
+      "id": 5,
+      "name": "Mr. Bartley's Burger Cottage",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site blocked fetch (403); no verifiable recurring deals found."
+    },
+    {
+      "id": 6,
+      "name": "The Hourly Oyster House",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "rewards",
+          "text": "Loyalty program: 1 point per $1; 150 points = $10 off next visit",
+          "source": "https://www.thehourlycambridge.com/",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Official site thehourlycambridge.com. No happy hour or oyster deal listed; oysters $3 each on regular menu."
+    },
+    {
+      "id": 7,
+      "name": "Felipe's Taqueria",
+      "status": "none",
+      "deals": [],
+      "notes": "Now at 21 Brattle St (input address 83 Mount Auburn St is the old location). felipesboston.com lists no deals. felipestaqueria.com is an unrelated New Orleans/Naples chain - its deals do NOT apply."
+    },
+    {
+      "id": 8,
+      "name": "Pinocchio's Pizza & Subs",
+      "status": "none",
+      "deals": [],
+      "notes": "pinocchiospizza.net lists no specials; still operating per Boston.com 2026-08."
+    },
+    {
+      "id": 9,
+      "name": "Russell House Tavern",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "late-night",
+          "text": "Dollar oysters late night: Sun–Thu 9–11pm, Fri–Sat 10pm–midnight (not on special events/holidays)",
+          "source": "https://www.russellhousecambridge.com/menus",
+          "source_date": "current site"
+        },
+        {
+          "type": "rewards",
+          "text": "Loyalty program: 1 point per $1; 150 points = $10 off next visit",
+          "source": "https://www.russellhousecambridge.com/",
+          "source_date": "current site"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Grendel's Den",
+      "status": "none",
+      "deals": [],
+      "notes": "Long-running half-price food 5-7:30pm with $4 drink purchase reported by Boston.com (2023-03) and undated Time Out, but official site blocked (403) and no 2025+ source found - not recorded. Worth manual check."
+    },
+    {
+      "id": 11,
+      "name": "The Helmand",
+      "status": "none",
+      "deals": [],
+      "notes": "Official domain now redirects to an unrelated site; OpenTable reviews through May 2026 suggest open. No deals found."
+    },
+    {
+      "id": 12,
+      "name": "Oleana",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists no happy hour/specials; free parking across the street after 5pm."
+    },
+    {
+      "id": 13,
+      "name": "Puritan & Company",
+      "status": "none",
+      "deals": [],
+      "notes": "Left out: no price listed"
+    },
+    {
+      "id": 14,
+      "name": "Puritan Oyster Bar",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "happy-hour",
+          "text": "Oyster hour daily 5–6pm: oysters half price",
+          "source": "https://www.puritancambridge.com/oysterbar",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Also confirmed by Time Out Boston (2026-01): half-price oysters at the bar daily 5-6pm. Time Out lists address as 1164 Cambridge St."
+    },
+    {
+      "id": 15,
+      "name": "Punjabi Dhaba",
+      "status": "none",
+      "deals": [],
+      "notes": "No official site found for the Cambridge location (punjabidhaba.com is an unrelated NYC restaurant)."
+    },
+    {
+      "id": 16,
+      "name": "Ole Mexican Grill",
+      "status": "none",
+      "deals": [],
+      "notes": "olerestaurantgroup.com lists no happy hour/specials."
+    },
+    {
+      "id": 17,
+      "name": "Bisq",
+      "status": "closed",
+      "closed_source": "https://www.boston.com/food/restaurants/2021/11/04/bisq-in-cambridge-has-permanently-closed",
+      "deals": [],
+      "notes": "Permanently closed in 2021 per https://www.boston.com/food/restaurants/2021/11/04/bisq-in-cambridge-has-permanently-closed ; old domain now redirects to an unrelated site."
+    },
+    {
+      "id": 18,
+      "name": "Giulia",
+      "status": "none",
+      "deals": [],
+      "notes": "Menu page (dated 2026-10-13) shows no prix fixe/specials."
+    },
+    {
+      "id": 19,
+      "name": "Moeca",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists no deals. Address on site is 1 Shepard St, Cambridge 02138 (input address 1336 Cambridge St looks wrong)."
+    },
+    {
+      "id": 20,
+      "name": "Sofra Bakery & Cafe",
+      "status": "none",
+      "deals": [],
+      "notes": "Only a subscription box and gift cards; no recurring deals."
+    },
+    {
+      "id": 21,
+      "name": "Pagu",
+      "status": "none",
+      "deals": [],
+      "notes": "No happy hour/specials on site; Dine Out Boston menu is a seasonal event (ignored)."
+    },
+    {
+      "id": 22,
+      "name": "Darling",
+      "status": "none",
+      "deals": [],
+      "notes": "Dim sum cocktail bar (opened 2025); site and menu show no happy hour."
+    },
+    {
+      "id": 23,
+      "name": "Mamaleh's Delicatessen",
+      "status": "none",
+      "deals": [],
+      "notes": "Has a regular kids menu ($3-$6 items) and validated Kendall garage parking, but no discount deals."
+    },
+    {
+      "id": 24,
+      "name": "Life Alive",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "rewards",
+          "text": "&Thrive Perks app program (no points): birthday gift, surprise perks, $5 off entree for joining",
+          "source": "https://www.lifealive.com/thrive",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Welcome offer described as limited time."
+    },
+    {
+      "id": 25,
+      "name": "Shalimar of India",
+      "status": "none",
+      "deals": [],
+      "notes": "No official site found; only a 2014 review mentioning a lunch buffet - not verifiable as current."
+    },
+    {
+      "id": 26,
+      "name": "Brookline Lunch",
+      "status": "none",
+      "deals": [],
+      "notes": "No official site; only older reviews, no recurring deals found."
+    },
+    {
+      "id": 27,
+      "name": "Yume Wo Katare",
+      "status": "none",
+      "deals": [],
+      "notes": "Official domain yumewokatare.com no longer belongs to the restaurant. No deals found; no closure reports found either."
+    },
+    {
+      "id": 28,
+      "name": "Roxy's Grilled Cheese & Burgers",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists no deals. Input address looks wrong: the Cambridge Roxy's is at 292 Mass Ave in Central Sq (485 was the Allston shop at 485 Cambridge St)."
+    },
+    {
+      "id": 29,
+      "name": "The Mad Monkfish",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site and menus page list no happy hour or specials. Has live jazz Wed-Sun and lunch combos on Toast, but no verified prices or hours."
+    },
+    {
+      "id": 30,
+      "name": "Pammy's",
+      "status": "none",
+      "deals": [],
+      "notes": "Left out: regular menu, not a discount"
+    },
+    {
+      "id": 31,
+      "name": "Area Four",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site and Kendall menu page list no happy hour or specials."
+    },
+    {
+      "id": 32,
+      "name": "Alice & Monarch",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists no food or drink deals, only discounted parking ($1/hr weekdays after 4pm and weekends)."
+    },
+    {
+      "id": 33,
+      "name": "Fallow Kin",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists hours only. Bar seating is walk-in."
+    },
+    {
+      "id": 34,
+      "name": "Geppetto",
+      "status": "none",
+      "deals": [],
+      "notes": "The official domain doesn't resolve. Listings put it at 100 N First St (Cambridge Crossing), not 100 Binney St. No deals verified; current status unclear."
+    },
+    {
+      "id": 35,
+      "name": "State Park",
+      "status": "none",
+      "deals": [],
+      "notes": "stateparkbar.com shows only a past, cancelled apertivo event. No recurring specials. Open until 1-2am."
+    },
+    {
+      "id": 36,
+      "name": "Judy's Bay",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site: open Wed-Sat 5-9pm. No specials listed."
+    },
+    {
+      "id": 37,
+      "name": "Alive & Kicking Lobsters",
+      "status": "none",
+      "deals": [],
+      "notes": "No official site with deals found."
+    },
+    {
+      "id": 38,
+      "name": "New Deal Fish Market",
+      "status": "none",
+      "deals": [],
+      "notes": "Fish market; no recurring deals found."
+    },
+    {
+      "id": 39,
+      "name": "The Coast Cafe",
+      "status": "none",
+      "deals": [],
+      "notes": "coastsoulcafe.com shows hours (Thu 3-8, Fri-Sat 12-8) and no specials."
+    },
+    {
+      "id": 40,
+      "name": "The Friendly Toast",
+      "status": "closed",
+      "closed_source": "https://www.thecrimson.com/article/2023/9/8/friendly-toast-opens/",
+      "deals": [],
+      "notes": "Kendall Sq location closed during COVID per Harvard Crimson (Sept 2023), which says Harvard Sq (1230 Mass Ave) is now the only Cambridge location. Source: https://www.thecrimson.com/article/2023/9/8/friendly-toast-opens/"
+    },
+    {
+      "id": 41,
+      "name": "Muqueca",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site shows hours (closed Mon) and no specials."
+    },
+    {
+      "id": 42,
+      "name": "Midwest Grill",
+      "status": "none",
+      "deals": [],
+      "notes": "Status uncertain. Official domain now redirects to an unrelated site. Cambridge Day (Apr 2024) reported it reopened with a buffet; Gayot marks it closed (undated). Couldn't verify which is current."
+    },
+    {
+      "id": 43,
+      "name": "Shy Bird",
+      "status": "none",
+      "deals": [],
+      "notes": "shybird.com lists no deals. The Kendall location page 404s, so its current status is unverified."
+    },
+    {
+      "id": 44,
+      "name": "Café Luna",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site domain is down and the Toast page is blocked. No deals verified."
+    },
+    {
+      "id": 45,
+      "name": "Eventide Fenway",
+      "status": "none",
+      "deals": [],
+      "notes": "Official Fenway page: open daily 11am-10pm. Oysters at regular price; no happy hour."
+    },
+    {
+      "id": 46,
+      "name": "Hojoko",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site has a late-night menu but no times given. Third-party claim of free fries after Red Sox home wins is unverified, so it was left out."
+    },
+    {
+      "id": 47,
+      "name": "Basho Japanese Brasserie",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists weekday lunch 11:30-3 but no specials or prices. Yaymaker claims happy hour 4:30-6 and late night 10-11:30 (undated, unverified), so it was left out."
+    },
+    {
+      "id": 48,
+      "name": "The Citizen Public House",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site (thecitizenboston.com) has no happy hour. Pig roast is a reservable group dinner, not a deal. Open until 1-2am, kitchen until 11pm/1am."
+    },
+    {
+      "id": 49,
+      "name": "Mida Fenway",
+      "status": "none",
+      "deals": [],
+      "notes": "Official Fenway page lists hours (weekday lunch 11-4) and parking validation, but no deals."
+    },
+    {
+      "id": 50,
+      "name": "Joe's Pizza",
+      "status": "none",
+      "deals": [],
+      "notes": "Fenway shop opened June 2026 (Boston Globe). No deals found."
+    },
+    {
+      "id": 51,
+      "name": "Naya",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "rewards",
+          "text": "NAYA app/online rewards account; $3 reward on your first order",
+          "source": "https://www.eatnaya.com",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Chain-wide program. The Fenway location (opened 2026) wasn't explicitly listed on the homepage."
+    },
+    {
+      "id": 52,
+      "name": "KChickin",
+      "status": "none",
+      "deals": [],
+      "notes": "No official site found; only a Giftly listing."
+    },
+    {
+      "id": 53,
+      "name": "Wow Tikka",
+      "status": "none",
+      "deals": [],
+      "notes": "Searched web and Boston Magazine 2022 opening coverage; no recurring deals found."
+    },
+    {
+      "id": 54,
+      "name": "Spring Shanghai Pan-Fried Buns",
+      "status": "none",
+      "deals": [],
+      "notes": "No official site found; only directory listings, no deals."
+    },
+    {
+      "id": 55,
+      "name": "Rod Thai Family Taste",
+      "status": "none",
+      "deals": [],
+      "notes": "Only third-party menus found; no verifiable lunch special."
+    },
+    {
+      "id": 56,
+      "name": "Fenway Grill & Bar",
+      "status": "none",
+      "deals": [],
+      "notes": "Checked fenwaygrillbar.com: no happy hour or specials listed."
+    },
+    {
+      "id": 57,
+      "name": "Loco Taqueria & Oyster Bar",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "weekly-special",
+          "text": "$1 oysters all day every Monday (Fenway and Southie locations)",
+          "source": "https://www.boston.com/food/restaurants/2025/05/27/where-to-get-1-oysters-every-day-of-the-week-in-boston/",
+          "source_date": "2025-05"
+        }
+      ],
+      "notes": "Boston Calendar weekly listing (2026) also says 11am-12:30am Mondays in South Boston + Fenway. Official site unreachable."
+    },
+    {
+      "id": 58,
+      "name": "Shy Bird Fenway",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "lunch",
+          "text": "Work from Shy Bird: weekdays until 3pm, $20.75 for breakfast or lunch + bottomless coffee, wifi",
+          "source": "https://www.shybird.com/work-from-shy-bird/",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Shy Hour happy hour mentioned by third parties with conflicting times; not confirmed on official site, so omitted."
+    },
+    {
+      "id": 59,
+      "name": "Saloniki",
+      "status": "none",
+      "deals": [],
+      "notes": "Not closed: Fenway location moved to 1330 Boylston St (July 2026, Boston Globe)."
+    },
+    {
+      "id": 60,
+      "name": "Sufra Mediterranean",
+      "status": "none",
+      "deals": [],
+      "notes": "Only old/directory sources; could not confirm current status or deals."
+    },
+    {
+      "id": 61,
+      "name": "Tasty Burger",
+      "status": "none",
+      "deals": [],
+      "notes": "tastyburger.com lists no deals or rewards; Van Ness location appears open (2026 sources)."
+    },
+    {
+      "id": 62,
+      "name": "Bleacher Bar",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site home and menus pages list no happy hour or specials."
+    },
+    {
+      "id": 63,
+      "name": "India Quality",
+      "status": "none",
+      "deals": [],
+      "notes": "indiaquality.com lists no lunch specials or recurring deals."
+    },
+    {
+      "id": 64,
+      "name": "Don't Tell Aunty",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "rewards",
+          "text": "Rewards: earn points on online orders, redeem for free food",
+          "source": "https://www.donttellaunty.com/",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Night Owl days/prices not listed on site."
+    },
+    {
+      "id": 65,
+      "name": "Saltie Girl",
+      "status": "none",
+      "deals": [],
+      "notes": "saltiegirl.com and 2025 Boston.com $1 oyster guide checked; no recurring deals."
+    },
+    {
+      "id": 66,
+      "name": "Parish Cafe & Bar",
+      "status": "none",
+      "deals": [],
+      "notes": "Left out: beer challenge, not a deal"
+    },
+    {
+      "id": 67,
+      "name": "Trident Booksellers & Cafe",
+      "status": "none",
+      "deals": [],
+      "notes": "tridentbookscafe.com lists no cafe deals or loyalty program."
+    },
+    {
+      "id": 68,
+      "name": "Krasi",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "weekly-special",
+          "text": "Symposium Wednesdays 5–9:30pm at the bar: 4 rotating Greek wines, 2oz taste of all four for a set price",
+          "source": "https://www.krasiboston.com/symposium-wednesday",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Price of tasting not listed."
+    },
+    {
+      "id": 69,
+      "name": "Greco",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "rewards",
+          "text": "Greco Rewards app: earn points on every order, unlock perks",
+          "source": "https://www.grecotrulygreek.com/",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Chain-wide program; could not confirm 225 Newbury St still open from a 2025+ source (locations page 404)."
+    },
+    {
+      "id": 70,
+      "name": "Puro Ceviche Bar",
+      "status": "none",
+      "deals": [],
+      "notes": "Search snippets of OpenTable mention $3 Taco Tuesday and $1 oysters Wed/Thu, but OpenTable pages timed out and official site returned 403, so unverified."
+    },
+    {
+      "id": 71,
+      "name": "Pho Basil",
+      "status": "none",
+      "deals": [],
+      "notes": "Only an old Phoenix review mentions a prix-fixe lunch; no current source."
+    },
+    {
+      "id": 72,
+      "name": "Douzo",
+      "status": "none",
+      "deals": [],
+      "notes": "douzosushi.com lists only parking validation; no food/drink deals."
+    },
+    {
+      "id": 73,
+      "name": "Abe & Louie's",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists weekend brunch only; no happy hour or specials."
+    },
+    {
+      "id": 74,
+      "name": "Atlantic Fish Company",
+      "status": "none",
+      "deals": [],
+      "notes": "atlanticfish.com lists weekend brunch only; no happy hour or oyster deal."
+    },
+    {
+      "id": 75,
+      "name": "Eataly Boston",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "happy-hour",
+          "text": "Happy hour at Terra (rooftop) Mon–Fri 4–6pm",
+          "source": "https://www.eataly.com/us_en/stores/boston/restaurants",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Specific happy hour prices not listed."
+    },
+    {
+      "id": 76,
+      "name": "UNI",
+      "status": "none",
+      "deals": [],
+      "notes": "Left out: no price listed"
+    },
+    {
+      "id": 77,
+      "name": "Bistro du Midi",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists service periods only (incl. daily 3–5pm midday menu, not a discount); no happy hour."
+    },
+    {
+      "id": 78,
+      "name": "Sonsie",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "lunch",
+          "text": "Power Lunch $25 (Caesar, fries, spritz) on weekday lunch menu, Mon–Fri 11:30am–4pm",
+          "source": "https://www.sonsieboston.com/menus",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Official site lists no happy hour."
+    },
+    {
+      "id": 79,
+      "name": "Select Oyster Bar",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site shows a 'Select Happy Hour' image but no readable days/times/prices; not recorded."
+    },
+    {
+      "id": 80,
+      "name": "Shake Shack Newbury Street",
+      "status": "none",
+      "deals": [],
+      "notes": "US loyalty is time-limited app 'Challenges' (NRN, May 2025), not a standing program; official rewards page blocked."
+    },
+    {
+      "id": 81,
+      "name": "Rosa y Marigold",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site/lunch/drinks menus checked; no happy hour or specials listed."
+    },
+    {
+      "id": 82,
+      "name": "Santouka Back Bay",
+      "status": "none",
+      "deals": [],
+      "notes": "No deals found on official site or press."
+    },
+    {
+      "id": 83,
+      "name": "Bukowski Tavern",
+      "status": "none",
+      "deals": [],
+      "notes": "Still open per 2026 sources; official site (bukowski-tavern.com) lists no specials."
+    },
+    {
+      "id": 84,
+      "name": "Lolita Back Bay",
+      "status": "none",
+      "deals": [],
+      "notes": "Official location page and menu list no happy hour or specials; bar open late."
+    },
+    {
+      "id": 85,
+      "name": "Tatte Bakery & Cafe (Boylston St)",
+      "status": "none",
+      "deals": [],
+      "notes": "Tatte terms page references a 'TATTE Rewards' program but no details on how it works; not recorded."
+    },
+    {
+      "id": 86,
+      "name": "Mumbai Spice",
+      "status": "none",
+      "deals": [],
+      "notes": "Lunch buffet mentioned only in third-party listings without prices; no official site found."
+    },
+    {
+      "id": 87,
+      "name": "Sumiao Hunan Kitchen",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "lunch",
+          "text": "Weekday lunch Tue–Fri 11:30am–3pm (excl. holidays): entrées $17.50 with soup; rice not included",
+          "source": "https://www.sumiaohunan.com/",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "No happy hour listed."
+    },
+    {
+      "id": 88,
+      "name": "Eastern Edge Food Hall",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists game nights (Mon/Wed/Sat) but no discounts."
+    },
+    {
+      "id": 89,
+      "name": "Tatte Bakery & Cafe (Third St)",
+      "status": "none",
+      "deals": [],
+      "notes": "Same as Boylston: rewards program referenced in terms but undocumented."
+    },
+    {
+      "id": 90,
+      "name": "Bakey",
+      "status": "none",
+      "deals": [],
+      "notes": "No deals found."
+    },
+    {
+      "id": 91,
+      "name": "CAVA",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "rewards",
+          "text": "CAVA Rewards: earn points on app/web orders; Sea, Sand (1,500 pts) and Sun (4,500 pts) tiers",
+          "source": "https://www.merca20.com/cava-revamps-its-rewards-program-heres-how-it-works/",
+          "source_date": "2025-10"
+        }
+      ],
+      "notes": "cava.com blocked fetch; program details from Oct 2025 coverage of relaunch."
+    },
+    {
+      "id": 92,
+      "name": "Fuji at Kendall",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site mentions birthday rewards on email signup but no details."
+    },
+    {
+      "id": 93,
+      "name": "Amelia's Trattoria",
+      "status": "none",
+      "deals": [],
+      "notes": "Site links lunch and 'Sample Pre-fix' PDFs; contents/prices not readable."
+    },
+    {
+      "id": 94,
+      "name": "Legal Sea Foods",
+      "status": "deals",
+      "deals": [
+        {
+          "type": "happy-hour",
+          "text": "Happy hour at the bar, 2–6pm daily: $1 oysters, 50¢ littlenecks, $2 shrimp cocktail. Hours changing, check site",
+          "source": "https://www.legalseafoods.com/happy-hour/",
+          "source_date": "current site"
+        }
+      ],
+      "notes": "Bar dine-in only; not valid holidays/select dates. Location page says times vary by location; happy hour page lists Kendall Square at 2–6pm daily."
+    },
+    {
+      "id": 95,
+      "name": "Veggie Galaxy",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site blocked/empty; no current deals found."
+    },
+    {
+      "id": 96,
+      "name": "Go! Go! Curry!",
+      "status": "none",
+      "deals": [],
+      "notes": "No official site or deals found."
+    },
+    {
+      "id": 97,
+      "name": "Dumpling House",
+      "status": "none",
+      "deals": [],
+      "notes": "Lunch specials mentioned in older/third-party sources only; listed domain redirects to unrelated site."
+    },
+    {
+      "id": 98,
+      "name": "Pepper Sky's Thai Sensation",
+      "status": "none",
+      "deals": [],
+      "notes": "Lunch specials mentioned only on gift-card site; no official source."
+    },
+    {
+      "id": 99,
+      "name": "Asmara Restaurant",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site lists hours 5–9pm Mon–Sat, no specials (tourism listing's weekday buffet appears outdated)."
+    },
+    {
+      "id": 100,
+      "name": "Koreana",
+      "status": "none",
+      "deals": [],
+      "notes": "Official site not reachable; no deals found."
+    },
+    {
+      "id": 101,
+      "name": "Shōjō",
+      "status": "none",
+      "deals": [],
+      "notes": "shojocambridge.com lists hours only."
+    },
+    {
+      "id": 102,
+      "name": "Andala Coffee House",
+      "status": "none",
+      "deals": [],
+      "notes": "No deals found."
+    }
+  ]
+}
