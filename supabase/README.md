@@ -1,6 +1,6 @@
 # Supabase: restaurants, deals, accounts, reviews and photos
 
-Cambridge Eats stays a static page. Restaurants, deals, logins, reviews and photos live in a free Supabase project.
+Boston Lifesaver (formerly Cambridge Eats) stays a static page. Restaurants, deals, logins, reviews and photos live in a free Supabase project.
 
 ## One-time setup (about 5 minutes)
 
@@ -15,7 +15,7 @@ Cambridge Eats stays a static page. Restaurants, deals, logins, reviews and phot
 
 ## How it works
 
-- **Usernames:** 3–20 characters, lowercase letters, numbers and `_`. Behind the scenes each username is stored as `username@users.cambridge-eats.app` because Supabase logins need an email-shaped ID. No email is ever sent, so **forgotten passwords can't be reset by the user**. An admin can set a new password from **Authentication → Users**.
+- **Usernames:** 3–20 characters, lowercase letters, numbers and `_`. Behind the scenes each username is stored as `username@users.cambridge-eats.app` (the old Cambridge Eats name, kept so existing accounts keep working) because Supabase logins need an email-shaped ID. No email is ever sent, so **forgotten passwords can't be reset by the user**. An admin can set a new password from **Authentication → Users**.
 - **Reviews:** one per person per restaurant (1–5 stars, up to 1000 characters, up to 3 photos). People can edit or delete only their own.
 - **Photos:** resized in the browser to max 1600 px JPEG before upload, stored in the public `food-photos` bucket under the uploader's own folder.
 - **Moderation:** to remove an abusive review or photo, delete it in **Table Editor → reviews** or **Storage → food-photos**. To ban someone, delete their user in **Authentication → Users** (their reviews go with it).

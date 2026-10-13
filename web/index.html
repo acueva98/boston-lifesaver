@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Searchable guide to restaurants in Cambridge, Fenway and Back Bay.">
-<title>Cambridge Eats</title>
+<meta name="description" content="Boston Lifesaver: find restaurant deals across Cambridge, Fenway and Back Bay.">
+<title>Boston Lifesaver</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: filter bar on top; list of restaurant rows on the left, sticky street map of Cambridge on the right; stacks on phones. */
+/* Layout: filter bar on top; list of restaurant rows on the left, sticky street map on the right; stacks on phones. */
 :root {
   --bg: #f5f4f0;
   --surface: #ffffff;
@@ -190,8 +190,8 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
   <div class="account" id="account" aria-live="polite"></div>
   <header>
     <div>
-      <p class="eyebrow">Boston Lifesaver · Cambridge &amp; Boston</p>
-      <h1>Cambridge Eats</h1>
+      <p class="eyebrow">Restaurant deals · Cambridge &amp; Boston</p>
+      <h1>Boston Lifesaver</h1>
       <p class="lede"><span id="total"></span> restaurants across Kendall, Central, Fenway, Back Bay, Harvard, Inman and beyond. Search, filter by price, sort by what's nearest to you, or tap a pin on the map.</p>
     </div>
     <div class="stats" id="stats"></div>
@@ -236,7 +236,7 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
     </div>
     <div class="map-wrap">
       <div class="map-card">
-        <div id="map" role="region" aria-label="Street map of Cambridge with restaurant locations"></div>
+        <div id="map" role="region" aria-label="Street map of Cambridge and Boston with restaurant locations"></div>
         <div class="map-note"><span>Pin positions are approximate.</span><span>Tap a dashed zone to filter by neighborhood · use +/− to zoom</span></div>
       </div>
     </div>
@@ -731,6 +731,7 @@ async function loadFromSupabase() {
   }
 }
 
+// USER_DOMAIN keeps its old name on purpose: changing it would lock out existing accounts.
 const BUCKET = "food-photos", USER_DOMAIN = "users.cambridge-eats.app", MAX_PHOTOS = 3;
 const stats = new Map();   // restaurant id → { avg, count }
 let me = null;             // { id, username } when signed in

@@ -1,4 +1,4 @@
--- Cambridge Eats: accounts, reviews and food photos.
+-- Boston Lifesaver (formerly Cambridge Eats): accounts, reviews and food photos.
 -- Run once in Supabase → SQL Editor → New query → paste → Run. Safe to re-run.
 
 -- ---------- Profiles (one per account; holds the public username) ----------
