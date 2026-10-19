@@ -1,0 +1,25 @@
+# Checks every live deal against its source page and updates Supabase, every day at 7am Boston time.
+# See supabase/README.md ("Daily deals check"). Needs the repo secret SUPABASE_SERVICE_ROLE_KEY.
+name: Daily deals check
+
+on:
+  schedule:
+    # GitHub cron runs in UTC: 11:00 UTC = 7am EDT (summer), 12:00 UTC = 7am EST (winter).
+    # The script skips whichever of the two isn't 7am in Boston that day.
+    - cron: "0 11 * * *"
+    - cron: "0 12 * * *"
+  workflow_dispatch: # "Run workflow" button in the Actions tab
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/refresh-deals.js
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SCHEDULE: ${{ github.event.schedule }}

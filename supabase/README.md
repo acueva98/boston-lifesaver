@@ -36,4 +36,20 @@ The site now reads restaurants and deals from two tables, set up with [`restaura
 
 **Backup copy:** the lists in `data/` and inside `web/index.html` are a fallback the page uses only if Supabase can't be reached (for example if the free project is paused). They don't update automatically, so refresh them now and then.
 
+## Daily deals check (added Oct 19, 2026)
+
+Every day at 7am Boston time, GitHub Actions ([`refresh-deals.yml`](../.github/workflows/refresh-deals.yml)) runs [`scripts/refresh-deals.js`](../scripts/refresh-deals.js). It is free (public repo, no AI) and visits the `source_url` of every live deal (`sourced` or `verified`):
+
+- **Deal still on the page** (its prices and at least half of its key words appear): `last_checked` is set to today, so the site shows a fresh "Checked" date.
+- **Page loads but the deal is gone 3 days in a row:** `status` becomes `rejected`, which hides it. To bring one back, set it to `sourced` again in **Table Editor → deals**.
+- **Page blocks bots or is down** (e.g. Don't Tell Aunty, WOW TIKKA return 403): nothing changes. Check those by hand.
+
+It only re-checks deals already in the table. **Finding new deals is still done by hand** (as in `deals_refresh_2026-10-19.sql`). It can also miss a changed price when the same number appears elsewhere on a menu.
+
+**Setup (repo owner, once):** Supabase → **Project Settings → API Keys** → copy the **secret / service_role** key. In GitHub → **Settings → Secrets and variables → Actions → New repository secret**, name it `SUPABASE_SERVICE_ROLE_KEY`. Never put this key in the code.
+
+**See results:** GitHub → **Actions → Daily deals check** → open a run; the summary lists each deal. The **Run workflow** button runs it now. Locally, `node scripts/refresh-deals.js` does a dry run that writes nothing.
+
+GitHub turns off scheduled workflows after 60 days with no commits to the repo; if that happens, re-enable it from the Actions tab. Its daily read of the database also helps keep the free Supabase project from pausing.
+
 **Free-plan pausing:** free projects pause after about a week with little traffic. If that happens, the site falls back to the built-in list and sign-in/reviews stop working until the owner clicks **Resume project** in the dashboard.
