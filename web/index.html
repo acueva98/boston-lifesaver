@@ -126,6 +126,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .account b { color: var(--fg); font-weight: 600; }
 .account { flex-wrap: wrap; }
 .account .btn { white-space: nowrap; }
+.acct-section h3 { font-size: 15px; margin: 0 0 4px; }
+.acct-section + .acct-section { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 16px; }
+.acct-section .hint { margin: 0 0 10px; }
 [hidden] { display: none !important; }
 .btn { font: inherit; font-size: 13.5px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
 .btn.primary { background: var(--brick); border-color: var(--brick); color: #fff; font-weight: 600; }
@@ -259,18 +262,42 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
     <label class="field">Username
       <input id="auth-user" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20" required>
     </label>
-    <label class="field">Password
+    <label class="field" id="auth-pass-field">Password
       <input id="auth-pass" name="password" type="password" autocomplete="current-password" required>
     </label>
-    <p class="hint" id="auth-hint" hidden>3–20 letters, numbers or _ · password at least 8 characters. You can change it later while signed in, but a forgotten password can't be reset, so keep it somewhere safe.</p>
+    <label class="field" id="auth-email-field" hidden>Recovery email <span class="muted">(optional)</span>
+      <input id="auth-email" name="email" type="email" autocomplete="email" maxlength="254" spellcheck="false">
+    </label>
+    <p class="hint" id="auth-hint" hidden>3–20 letters, numbers or _ · password at least 8 characters. Add a recovery email so you can reset a forgotten password. It's private and only used for that.</p>
+    <p class="hint" id="auth-forgot-hint" hidden>Enter your username. If your account has a recovery email, we'll email you a link to set a new password.</p>
     <p class="form-err" id="auth-err" role="alert"></p>
-    <button class="btn primary" type="submit" id="auth-submit">Sign in</button>
+    <p class="hint" id="auth-ok" role="status" hidden></p>
+    <div class="form-row">
+      <button class="btn primary" type="submit" id="auth-submit">Sign in</button>
+      <button class="reset" type="button" id="auth-forgot">Forgot password?</button>
+      <button class="reset" type="button" id="auth-back" hidden>Back to sign in</button>
+    </div>
   </form>
 </dialog>
 
 <dialog class="dlg narrow" id="pw-dlg" aria-labelledby="pw-title">
-  <form class="dlg-body" id="pw-form" novalidate>
-    <div class="dlg-head"><h2 id="pw-title">Change password</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+  <div class="dlg-body">
+  <div class="dlg-head"><h2 id="pw-title">Account</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+  <form id="rec-form" class="acct-section" novalidate>
+    <h3>Recovery email</h3>
+    <p class="hint" id="rec-status">Used only to email you a reset link if you forget your password. Nobody else can see it.</p>
+    <label class="field">Email
+      <input id="rec-email" type="email" autocomplete="email" maxlength="254" spellcheck="false">
+    </label>
+    <p class="form-err" id="rec-err" role="alert"></p>
+    <p class="hint" id="rec-ok" role="status" hidden></p>
+    <div class="form-row">
+      <button class="btn primary" type="submit" id="rec-save">Save email</button>
+      <button class="reset" type="button" id="rec-remove" hidden>Remove</button>
+    </div>
+  </form>
+  <form id="pw-form" class="acct-section" novalidate>
+    <h3>Change password</h3>
     <input type="text" id="pw-user" autocomplete="username" hidden>
     <label class="field">Current password
       <input id="pw-current" type="password" autocomplete="current-password" required>
@@ -285,6 +312,24 @@ footer code { font-family: var(--font-mono); font-size: 12px; }
     <p class="form-err" id="pw-err" role="alert"></p>
     <p class="hint" id="pw-ok" role="status" hidden>Password changed.</p>
     <button class="btn primary" type="submit" id="pw-submit">Change password</button>
+  </form>
+  </div>
+</dialog>
+
+<dialog class="dlg narrow" id="reset-dlg" aria-labelledby="reset-title">
+  <form class="dlg-body" id="reset-form" novalidate>
+    <div class="dlg-head"><h2 id="reset-title">Set a new password</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+    <p class="hint" id="reset-who"></p>
+    <input type="text" id="reset-user" autocomplete="username" hidden>
+    <label class="field">New password
+      <input id="reset-new" type="password" autocomplete="new-password" minlength="8" required>
+    </label>
+    <label class="field">Repeat new password
+      <input id="reset-repeat" type="password" autocomplete="new-password" minlength="8" required>
+    </label>
+    <p class="form-err" id="reset-err" role="alert"></p>
+    <p class="hint" id="reset-ok" role="status" hidden>Password updated. You're signed in.</p>
+    <button class="btn primary" type="submit" id="reset-submit">Save new password</button>
   </form>
 </dialog>
 
@@ -759,32 +804,42 @@ async function loadStats() {
 }
 
 // --- account bar + sign-in dialog ---
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 function setMe(session) {
   const u = session && session.user;
   me = u ? { id: u.id, username: (u.user_metadata && u.user_metadata.username) || u.email.split("@")[0] } : null;
   $("#account").innerHTML = me
-    ? `<span>Signed in as <b>@${esc(me.username)}</b></span><button type="button" class="btn" id="change-pw">Change password</button><button type="button" class="btn" id="sign-out">Sign out</button>`
+    ? `<span>Signed in as <b>@${esc(me.username)}</b></span><button type="button" class="btn" id="change-pw">Account</button><button type="button" class="btn" id="sign-out">Sign out</button>`
     : `<button type="button" class="btn" id="sign-in">Sign in</button><button type="button" class="btn primary" id="sign-up">Create account</button>`;
   if (current && $("#rev-dlg").open) openReviews(current.id);
 }
 let authMode = "signin";
 function setAuthMode(m) {
   authMode = m;
-  const up = m === "signup";
+  const up = m === "signup", forgot = m === "forgot";
   document.querySelectorAll("#auth-dlg [data-mode]").forEach(b => b.setAttribute("aria-selected", b.dataset.mode === m));
-  $("#auth-title").textContent = $("#auth-submit").textContent = up ? "Create account" : "Sign in";
+  $("#auth-title").textContent = up ? "Create account" : forgot ? "Reset password" : "Sign in";
+  $("#auth-submit").textContent = up ? "Create account" : forgot ? "Email me a reset link" : "Sign in";
   $("#auth-pass").autocomplete = up ? "new-password" : "current-password";
+  $("#auth-pass-field").hidden = forgot;
+  $("#auth-email-field").hidden = !up;
   $("#auth-hint").hidden = !up;
-  $("#auth-err").textContent = "";
+  $("#auth-forgot-hint").hidden = !forgot;
+  $("#auth-forgot").hidden = m !== "signin";
+  $("#auth-back").hidden = !forgot;
+  $("#auth-err").textContent = ""; $("#auth-ok").hidden = true;
 }
 function openAuth(m) { setAuthMode(m); $("#auth-dlg").showModal(); $("#auth-user").focus(); }
 
 async function submitAuth(e) {
   e.preventDefault();
   const username = $("#auth-user").value.trim().toLowerCase(), password = $("#auth-pass").value;
+  const recEmail = $("#auth-email").value.trim();
   const err = $("#auth-err"), btn = $("#auth-submit");
   if (!/^[a-z0-9_]{3,20}$/.test(username)) return err.textContent = "Usernames are 3–20 letters, numbers or underscores.";
+  if (authMode === "forgot") return sendReset(username);
   if (authMode === "signup" && password.length < 8) return err.textContent = "Use a password of at least 8 characters.";
+  if (authMode === "signup" && recEmail && !EMAIL_RE.test(recEmail)) return err.textContent = "That recovery email doesn't look right. Fix it or leave it empty.";
   if (!password) return err.textContent = "Enter your password.";
   const email = `${username}@${USER_DOMAIN}`;
   btn.disabled = true; err.textContent = "";
@@ -805,16 +860,65 @@ async function submitAuth(e) {
       err.textContent = "Account created, but sign-in is waiting for an email confirmation. The site owner needs to turn off “Confirm email” in Supabase.";
       return;
     }
+    if (authMode === "signup" && recEmail) {
+      const { error: recErr } = await sb.from("recovery_emails").upsert({ user_id: data.user.id, email: recEmail });
+      if (recErr) console.warn("Couldn't save recovery email", recErr);   // account still works; they can add it under Account
+    }
     $("#auth-form").reset(); $("#auth-dlg").close();
   } finally { btn.disabled = false; }
 }
 
-// --- change password (asks for the current one first, so an unattended signed-in device can't be taken over) ---
-function openChangePw() {
-  $("#pw-form").reset(); $("#pw-err").textContent = ""; $("#pw-ok").hidden = true;
-  $("#pw-user").value = me.username;   // lets password managers file the new password under the right account
-  $("#pw-dlg").showModal(); $("#pw-current").focus();
+// "Forgot password?": the send-reset function emails a one-time link to the account's recovery email.
+// It always answers the same way, so nobody can use it to find out which usernames exist.
+async function sendReset(username) {
+  const err = $("#auth-err"), ok = $("#auth-ok"), btn = $("#auth-submit");
+  btn.disabled = true; err.textContent = ""; ok.hidden = true;
+  try {
+    const { error } = await sb.functions.invoke("send-reset", { body: { username } });
+    if (error) return err.textContent = "Couldn't send the email right now. Try again in a few minutes.";
+    ok.textContent = `If @${username} has a recovery email, a reset link is on its way. Check your inbox (and spam). The link works once.`;
+    ok.hidden = false;
+  } finally { btn.disabled = false; }
 }
+
+// --- account dialog: recovery email + change password ---
+let savedRecEmail = "";
+async function openChangePw() {
+  $("#pw-form").reset(); $("#pw-err").textContent = ""; $("#pw-ok").hidden = true;
+  $("#rec-err").textContent = ""; $("#rec-ok").hidden = true;
+  $("#pw-user").value = me.username;   // lets password managers file the new password under the right account
+  $("#rec-email").value = ""; $("#rec-remove").hidden = true;
+  $("#pw-dlg").showModal();
+  const { data } = await sb.from("recovery_emails").select("email").eq("user_id", me.id).maybeSingle();
+  savedRecEmail = (data && data.email) || "";
+  $("#rec-email").value = savedRecEmail;
+  $("#rec-remove").hidden = !savedRecEmail;
+  $("#rec-status").textContent = savedRecEmail
+    ? "Reset links go here if you forget your password. Nobody else can see it."
+    : "You haven't added one yet. Without it, a forgotten password can't be reset. Nobody else can see it.";
+}
+async function saveRecEmail(e) {
+  e.preventDefault();
+  const email = $("#rec-email").value.trim(), err = $("#rec-err"), ok = $("#rec-ok"), btn = $("#rec-save");
+  ok.hidden = true;
+  if (!EMAIL_RE.test(email)) return err.textContent = "Enter a valid email address.";
+  btn.disabled = true; err.textContent = "";
+  try {
+    const { error } = await sb.from("recovery_emails").upsert({ user_id: me.id, email, updated_at: new Date().toISOString() });
+    if (error) return err.textContent = "Couldn't save it: " + error.message;
+    savedRecEmail = email; $("#rec-remove").hidden = false;
+    ok.textContent = "Saved. Reset links will go to " + email + "."; ok.hidden = false;
+  } finally { btn.disabled = false; }
+}
+async function removeRecEmail() {
+  if (!confirm("Remove your recovery email? You won't be able to reset a forgotten password.")) return;
+  const { error } = await sb.from("recovery_emails").delete().eq("user_id", me.id);
+  if (error) return $("#rec-err").textContent = "Couldn't remove it: " + error.message;
+  savedRecEmail = ""; $("#rec-email").value = ""; $("#rec-remove").hidden = true;
+  $("#rec-ok").textContent = "Removed."; $("#rec-ok").hidden = false;
+}
+
+// Change password: asks for the current one first, so an unattended signed-in device can't be taken over
 async function submitChangePw(e) {
   e.preventDefault();
   const cur = $("#pw-current").value, next = $("#pw-new").value, again = $("#pw-repeat").value;
@@ -831,16 +935,52 @@ async function submitChangePw(e) {
     if (!email) return err.textContent = "You've been signed out. Sign in again first.";
     const check = await sb.auth.signInWithPassword({ email, password: cur });
     if (check.error) return err.textContent = /invalid login credentials/i.test(check.error.message) ? "Current password is wrong." : "Couldn't check your password: " + check.error.message;
-    const { error } = await sb.auth.updateUser({ password: next });
-    if (error) {
-      const m = error.message || "";
-      return err.textContent = /different from the old|same_password/i.test(m) ? "The new password must be different from the current one."
-        : /reauthenticat|nonce/i.test(m) ? "Supabase is set to require an email check for password changes. The site owner needs to turn off “Secure password change”."
-        : "Couldn't change the password: " + m;
-    }
+    const msg = await setNewPassword(next);
+    if (msg) return err.textContent = msg;
     $("#pw-form").reset(); $("#pw-ok").hidden = false;
-    setTimeout(() => { if ($("#pw-dlg").open && !$("#pw-ok").hidden) $("#pw-dlg").close(); }, 1500);
   } finally { btn.disabled = false; }
+}
+// Returns an error message, or "" on success
+async function setNewPassword(password) {
+  const { error } = await sb.auth.updateUser({ password });
+  if (!error) return "";
+  const m = error.message || "";
+  return /different from the old|same_password/i.test(m) ? "The new password must be different from the current one."
+    : /reauthenticat|nonce/i.test(m) ? "Supabase is set to require an email check for password changes. The site owner needs to turn off “Secure password change”."
+    : /session|jwt|expired/i.test(m) ? "Your reset link has expired. Ask for a new one from “Forgot password?”."
+    : "Couldn't change the password: " + m;
+}
+
+// --- arriving from a reset link: Supabase signs the person in and fires PASSWORD_RECOVERY ---
+function openResetDialog() {
+  $("#reset-form").reset(); $("#reset-err").textContent = ""; $("#reset-ok").hidden = true;
+  $("#reset-user").value = me ? me.username : "";
+  $("#reset-who").textContent = me ? `Choose a new password for @${me.username}.` : "Choose a new password.";
+  if (!$("#reset-dlg").open) $("#reset-dlg").showModal();
+  $("#reset-new").focus();
+}
+async function submitReset(e) {
+  e.preventDefault();
+  const next = $("#reset-new").value, again = $("#reset-repeat").value, err = $("#reset-err"), btn = $("#reset-submit");
+  if (next.length < 8) return err.textContent = "Use a password of at least 8 characters.";
+  if (next !== again) return err.textContent = "The passwords don't match.";
+  btn.disabled = true; err.textContent = "";
+  try {
+    const msg = await setNewPassword(next);
+    if (msg) return err.textContent = msg;
+    $("#reset-form").reset(); $("#reset-ok").hidden = false;
+    setTimeout(() => { if ($("#reset-dlg").open) $("#reset-dlg").close(); }, 1800);
+  } finally { btn.disabled = false; }
+}
+// An expired or already-used link comes back with the error in the URL instead of a session
+function checkResetLinkError() {
+  const p = new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
+  if (!p.get("error_description")) return;
+  history.replaceState(null, "", location.pathname);
+  openAuth("forgot");
+  $("#auth-err").textContent = /expired|invalid/i.test(p.get("error_description"))
+    ? "That reset link has expired or was already used. Request a new one below."
+    : "The reset link didn't work: " + p.get("error_description");
 }
 
 // --- reviews dialog ---
@@ -963,6 +1103,11 @@ if (sb) {
     else if (e.target.closest("#sign-out")) sb.auth.signOut();
   });
   $("#pw-form").addEventListener("submit", submitChangePw);
+  $("#rec-form").addEventListener("submit", saveRecEmail);
+  $("#rec-remove").addEventListener("click", removeRecEmail);
+  $("#reset-form").addEventListener("submit", submitReset);
+  $("#auth-forgot").addEventListener("click", () => { setAuthMode("forgot"); $("#auth-user").focus(); });
+  $("#auth-back").addEventListener("click", () => { setAuthMode("signin"); $("#auth-user").focus(); });
   document.querySelectorAll("dialog.dlg").forEach(d => d.addEventListener("click", e => {
     if (e.target === d || e.target.closest("[data-close]")) d.close();   // backdrop or ×
   }));
@@ -990,7 +1135,11 @@ if (sb) {
     e.target.value = ""; paintThumbs();
   });
   $("#rev-mine").addEventListener("submit", saveReview);
-  sb.auth.onAuthStateChange((_event, session) => setTimeout(() => setMe(session)));   // defer: no Supabase calls inside the callback
+  sb.auth.onAuthStateChange((event, session) => setTimeout(() => {   // defer: no Supabase calls inside the callback
+    setMe(session);
+    if (event === "PASSWORD_RECOVERY") openResetDialog();
+  }));
+  checkResetLinkError();
 }
 
 loadFromSupabase().then(() => {
