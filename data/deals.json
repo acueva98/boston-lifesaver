@@ -1,5 +1,5 @@
 {
-  "last_checked": "2026-10-13",
+  "last_checked": "2026-10-19",
   "note": "Recurring deals found on restaurant websites or local press (2025–2026). Each deal links to its source. Deals change; confirm before going.",
   "restaurants": [
     {
@@ -19,8 +19,15 @@
     {
       "id": 2,
       "name": "Alden & Harlow",
-      "status": "none",
-      "deals": [],
+      "status": "deals",
+      "deals": [
+        {
+          "type": "late-night",
+          "text": "Late night, every night from 10pm: \"The Last Call\", steak frites plate + dirty martini for $24",
+          "source": "https://www.aldenharlow.com/menus",
+          "source_date": "current site"
+        }
+      ],
       "notes": "Official site lists no happy hour or late-night deal; only regular dinner/brunch hours."
     },
     {
@@ -425,8 +432,15 @@
     {
       "id": 53,
       "name": "Wow Tikka",
-      "status": "none",
-      "deals": [],
+      "status": "deals",
+      "deals": [
+        {
+          "type": "rewards",
+          "text": "WOW TIKKA Rewards: earn points on online orders, redeem for free food",
+          "source": "https://www.wowtikka.com/",
+          "source_date": "current site"
+        }
+      ],
       "notes": "Searched web and Boston Magazine 2022 opening coverage; no recurring deals found."
     },
     {
@@ -677,8 +691,15 @@
     {
       "id": 82,
       "name": "Santouka Back Bay",
-      "status": "none",
-      "deals": [],
+      "status": "deals",
+      "deals": [
+        {
+          "type": "rewards",
+          "text": "Santouka app: earn 5 points per visit, redeem for rewards (Back Bay participates)",
+          "source": "https://santouka-usa.com/",
+          "source_date": "current site"
+        }
+      ],
       "notes": "No deals found on official site or press."
     },
     {
@@ -752,7 +773,7 @@
         {
           "type": "rewards",
           "text": "CAVA Rewards: earn points on app/web orders; Sea, Sand (1,500 pts) and Sun (4,500 pts) tiers",
-          "source": "https://www.merca20.com/cava-revamps-its-rewards-program-heres-how-it-works/",
+          "source": "https://www.restaurantdive.com/news/cava-sea-sand-sun-spend-discount-tiers/802492/",
           "source_date": "2025-10"
         }
       ],
@@ -780,7 +801,7 @@
         {
           "type": "happy-hour",
           "text": "Happy hour at the bar, 2–6pm daily: $1 oysters, 50¢ littlenecks, $2 shrimp cocktail. Hours changing, check site",
-          "source": "https://www.legalseafoods.com/happy-hour/",
+          "source": "https://www.legalseafoods.com/whats-on/happy-hour/",
           "source_date": "current site"
         }
       ],
