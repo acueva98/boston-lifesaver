@@ -124,8 +124,9 @@ function askPick(q, origin) {
   const byDist = (a, b) => (a.d ?? 0) - (b.d ?? 0);
   const byPrice = (a, b) => a.price.length - b.price.length;
   const sort = rs => rs.slice().sort((a, b) => byDeal(a, b) || (q.cheapest ? byPrice(a, b) : 0) || byDist(a, b) || byPrice(a, b));
-  const ranked = sort(q.deals && q.dealsStrict ? inRange.filter(r => r.deals.length) : inRange);
-  const nearestOutside = origin && limit && !ranked.length ? sort(pool.filter(r => r.min > limit)).sort(byDist)[0] : null;
+  const keep = rs => q.deals && q.dealsStrict ? rs.filter(r => r.deals.length) : rs;
+  const ranked = sort(keep(inRange));
+  const nearestOutside = origin && limit && !ranked.length ? keep(pool.filter(r => r.min > limit)).sort(byDist)[0] : null;
   return { ranked, limit, nearestOutside, poolSize: pool.length };
 }
 
@@ -151,10 +152,12 @@ function askAnswer(q, origin, res) {
   const what = q.cuisine ? (es ? `de comida ${q.cuisine.es}`.replace("de comida de ", "de ") : `${q.cuisine.en} `) : "";
   const where = origin?.label ? (es ? ` de ${origin.label}` : ` of ${origin.label}`) : (es ? " de ti" : " of you");
   const within = res.limit && origin ? (es ? ` a ${res.limit} min o menos caminando${where}` : ` within a ${res.limit}-minute walk${where}`) : "";
-  const notes = [];
-  if ((q.near || q.maxMin) && !origin) notes.push(es
-    ? "No pude usar tu ubicación, así que no filtré por distancia. Permite la ubicación en el navegador o escribe un lugar, por ejemplo “cerca de Kendall”."
-    : "I couldn't use your location, so I didn't filter by distance. Allow location in your browser or name a place, e.g. “near Kendall”.");
+  // Without a location, say so first and offer places to measure from instead
+  const noLoc = (q.near || q.maxMin) && !origin;
+  const notes = noLoc ? [es
+    ? "No pude usar tu ubicación, así que no filtré por distancia. Elige un lugar abajo o permite la ubicación en el navegador y vuelve a preguntar."
+    : "I couldn't use your location, so I didn't filter by distance. Pick a place below, or allow location in your browser and ask again."] : [];
+  const chips = noLoc ? ["MIT", "Kendall", "Central", "Harvard", "Fenway", "Back Bay"].map(p => es ? `y cerca de ${p}` : `and near ${p}`) : [];
 
   if (!top.length) {
     let msg = es ? `No encontré restaurantes ${what}${within}` : `I couldn't find ${what}restaurants${within}`;
@@ -163,9 +166,9 @@ function askAnswer(q, origin, res) {
     if (res.nearestOutside) {
       const n = res.nearestOutside;
       msg += es ? ` El más cercano es ${n.name}, a unos ${n.min} min caminando.` : ` The closest is ${n.name}, about a ${n.min}-minute walk.`;
-      return { text: [msg, ...notes], cards: [askCard(n, es)] };
+      return { text: [...notes, msg], cards: [askCard(n, es)], chips };
     }
-    return { text: [msg, ...notes], cards: [] };
+    return { text: [...notes, msg], cards: [], chips };
   }
 
   const n = res.ranked.length;
@@ -182,10 +185,11 @@ function askAnswer(q, origin, res) {
     else msg += es ? ` ${withDeals === 1 ? "1 tiene descuento y aparece primero" : `${withDeals} tienen descuentos y aparecen primero`}.` : ` ${withDeals} ${withDeals === 1 ? "has a deal and is" : "have deals and are"} listed first.`;
   }
   if (n > 3) msg += es ? ` Te muestro los ${top.length} mejores.` : ` Here are the top ${top.length}.`;
-  const foot = es
-    ? `Tiempos aproximados (en línea recta + desvíos). Descuentos revisados el ${DEALS.checked}; confírmalos antes de ir.`
-    : `Walking times are estimates. Deals checked ${DEALS.checked}; confirm before you go.`;
-  return { text: [msg, ...notes], cards: top.map(r => askCard(r, es)), foot: (origin || q.deals) ? foot : "" };
+  const foot = [
+    origin ? (es ? "Tiempos caminando aproximados." : "Walking times are estimates.") : "",
+    es ? `Descuentos revisados el ${DEALS.checked}; confírmalos antes de ir.` : `Deals checked ${DEALS.checked}; confirm before you go.`,
+  ].filter(Boolean).join(" ");
+  return { text: [...notes, msg], cards: top.map(r => askCard(r, es)), foot, chips };
 }
 
 const ASK_HELP = {
@@ -208,16 +212,29 @@ async function askHandle(text) {
   const thinking = wantsDistance && !q.place && !state.here ? askSay("bot", [q.es ? "Buscando tu ubicación…" : "Finding your location…"], [], "", true) : null;
   const origin = wantsDistance ? await askOrigin(q) : (state.here ? { ...state.here, label: null } : null);
   if (thinking) thinking.remove();
-  const a = askAnswer(q, origin, askPick(q, wantsDistance ? origin : null));
-  askSay("bot", a.text, a.cards, a.foot);
+  const from = wantsDistance ? origin : null;
+  let res = askPick(q, from), relaxed = "";
+  // Nothing fits: try again without the price filter before giving up, and say so
+  if (!res.ranked.length && q.prices) {
+    const loose = askPick({ ...q, prices: null }, from);
+    if (loose.ranked.length) {
+      res = loose;
+      relaxed = q.es ? `No hay opciones en ese rango de precio (${q.prices.join(", ")}), así que te muestro otras sin filtrar por precio.`
+        : `Nothing in that price range (${q.prices.join(", ")}), so here are options at any price.`;
+    }
+  }
+  const a = askAnswer(q, origin, res);
+  if (relaxed) a.text.unshift(relaxed);
+  askSay("bot", a.text, a.cards, a.foot, false, a.chips);
 }
 
-function askSay(who, lines, cards = [], foot = "", temp = false) {
+function askSay(who, lines, cards = [], foot = "", temp = false, chips = []) {
   const li = document.createElement("li");
   li.className = `ask-msg ${who}${temp ? " temp" : ""}`;
   li.innerHTML = lines.map(l => `<p>${esc(l)}</p>`).join("") +
     (cards.length ? `<ul class="ask-cards">${cards.join("")}</ul>` : "") +
-    (foot ? `<p class="ask-foot">${esc(foot)}</p>` : "");
+    (foot ? `<p class="ask-foot">${esc(foot)}</p>` : "") +
+    (chips.length ? `<div class="ask-chips">${chips.map(c => `<button type="button" class="chip" data-ask="${esc(c)}">${esc(c)}</button>`).join("")}</div>` : "");
   $("#ask-log").appendChild(li);
   $("#ask-log").scrollTop = $("#ask-log").scrollHeight;
   return li;
@@ -254,6 +271,7 @@ function askSetup() {
   $("#ask-form").addEventListener("submit", e => { e.preventDefault(); send($("#ask-input").value); $("#ask-input").value = ""; });
   $("#ask-examples").addEventListener("click", e => { const b = e.target.closest("button"); if (b) send(b.textContent); });
   $("#ask-log").addEventListener("click", e => {
+    const c = e.target.closest("[data-ask]"); if (c) return send(c.dataset.ask);
     const b = e.target.closest("[data-jump]"); if (!b) return;
     if (matchMedia("(max-width: 820px)").matches) toggle(false);
     jump(+b.dataset.jump);
