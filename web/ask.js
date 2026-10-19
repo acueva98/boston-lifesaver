@@ -1,6 +1,7 @@
 // "Ask Boston Lifesaver": a chat that recommends restaurants from the list on this page.
 // No AI and no server: it reads the question (Spanish or English) for cuisine, walking time,
 // price, deals and place, then filters R and DEALS (defined in index.html) and explains the picks.
+// Replies are in English by default; the Español / English button switches the whole chat.
 // Walking time is an estimate: straight-line distance × 1.3 for street detours, at 3 mph.
 
 const ASK_MIN_PER_MILE = 20 * 1.3;
@@ -56,7 +57,7 @@ const ASK_DEAL_WORDS = /descuento|oferta|promo|deal|discount|happy ?hour|rewards
 const ASK_DEAL_TYPES = [
   [/happy ?hour/, ["happy-hour"]],
   [/almuerzo|lunch/, ["lunch"]],
-  [/late ?night|trasnoche|nocturn|madrugada/, ["late-night"]],
+  [/late[\s-]?night|trasnoche|nocturn|madrugada/, ["late-night"]],
   [/prix|men[uú] fijo|precio fijo/, ["prix-fixe"]],
   [/puntos|points|rewards?|lealtad|loyalty/, ["rewards"]],
 ];
@@ -65,13 +66,12 @@ const fold = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
 function askParse(text) {
   const t = fold(text), raw = text.toLowerCase(), q = {};
-  q.es = /[¿¡ñáéíóú]/.test(raw) || /\b(me|puedes|recomienda|recomiendas|restaurante?s?|comida|que|cerca|caminando|minutos|descuentos?|barato|donde|algun[oa]?|algo|quiero|busco|quisiera|comer|hay|hola|buenas|gracias|en|del|con|para|por|y)\b/.test(t);
   const c = ASK_CUISINES.find(([w]) => w.test(t));
   if (c) q.cuisine = { re: c[1], es: c[2], en: c[3] };
   const p = ASK_PLACES.find(([w]) => w.test(t));
   if (p) q.place = { name: p[1], lat: p[2], lng: p[3] };
 
-  const min = t.match(/(\d+)\s*(?:min|minutos|minutes|mins)\b/);
+  const min = t.match(/(\d+)[\s-]*(?:min|minutos|minutes|mins)\b/);
   const mi = t.match(/(\d+(?:[.,]\d+)?)\s*(?:mi|millas?|miles?)\b/);
   const km = t.match(/(\d+(?:[.,]\d+)?)\s*(?:km|kilometros?)\b/);
   const blocks = t.match(/(\d+)\s*(?:cuadras?|blocks?)\b/);
@@ -147,8 +147,8 @@ function askCard(r, es) {
   </li>`;
 }
 
-function askAnswer(q, origin, res) {
-  const es = q.es, top = res.ranked.slice(0, 3);
+function askAnswer(q, origin, res, es) {
+  const top = res.ranked.slice(0, 3);
   const what = q.cuisine ? (es ? `de comida ${q.cuisine.es}`.replace("de comida de ", "de ") : `${q.cuisine.en} `) : "";
   const where = origin?.label ? (es ? ` de ${origin.label}` : ` of ${origin.label}`) : (es ? " de ti" : " of you");
   const within = res.limit && origin ? (es ? ` a ${res.limit} min o menos caminando${where}` : ` within a ${res.limit}-minute walk${where}`) : "";
@@ -162,7 +162,7 @@ function askAnswer(q, origin, res) {
   if (!top.length) {
     let msg = es ? `No encontré restaurantes ${what}${within}` : `I couldn't find ${what}restaurants${within}`;
     if (q.deals && q.dealsStrict) msg += es ? " con descuentos" : " with deals";
-    msg += ".";
+    msg = (msg + ".").replace(/\s{2,}/g, " ");
     if (res.nearestOutside) {
       const n = res.nearestOutside;
       msg += es ? ` El más cercano es ${n.name}, a unos ${n.min} min caminando.` : ` The closest is ${n.name}, about a ${n.min}-minute walk.`;
@@ -193,78 +193,119 @@ function askAnswer(q, origin, res) {
 }
 
 const ASK_HELP = {
-  es: "Pregúntame por tipo de comida, distancia, precio o descuentos. Por ejemplo: “comida japonesa barata cerca del MIT” o “¿dónde hay happy hour a 10 minutos caminando?”.",
-  en: "Ask me about cuisine, distance, price or deals. For example: “cheap Japanese near MIT” or “happy hour within a 10-minute walk”.",
+  es: "Pregúntame por tipo de comida, distancia, precio o descuentos. Por ejemplo: “sushi barato cerca del MIT” o “happy hour a 10 min caminando”.",
+  en: "Ask me about cuisine, distance, price or deals. For example: “cheap sushi near MIT” or “happy hour within a 10-min walk”.",
 };
+// Short starter questions: [English, Spanish]
+const ASK_EXAMPLES = [
+  ["Mexican food nearby with deals", "Comida mexicana cerca con descuento"],
+  ["Cheap eats near MIT", "Algo barato cerca del MIT"],
+  ["Sushi within a 10-min walk", "Sushi a 10 min caminando"],
+];
+const ASK_UI = {
+  en: { fab: "Ask me!", sub: "Recommendations from the list on this page", ph: "E.g. happy hour in Back Bay", label: "Your question", send: "Send", hi: "Hi! I can help you pick where to eat. ", locating: "Finding your location…", other: "Español", otherLabel: "Cambiar el chat a español" },
+  es: { fab: "¡Pregúntame!", sub: "Recomendaciones según la lista de esta página", ph: "Ej.: happy hour en Back Bay", label: "Tu pregunta", send: "Enviar", hi: "¡Hola! Te ayudo a elegir dónde comer. ", locating: "Buscando tu ubicación…", other: "English", otherLabel: "Switch the chat to English" },
+};
+// The chat speaks English unless the visitor picked Spanish (remembered in this browser)
+let askLang = "en";
+try { if (localStorage.getItem("askLang") === "es") askLang = "es"; } catch (e) {}
 let askLast = null;
+const askBots = [];   // { li, draw: es => { text, cards, foot, chips } } so answers can be redrawn in the other language
 
 async function askHandle(text) {
   let q = askParse(text);
   const understood = q.cuisine || q.near || q.deals || q.prices || q.place || q.cheapest;
-  if (!understood) return askSay("bot", [ASK_HELP[q.es ? "es" : "en"]]);
+  if (!understood) return askBot(es => ({ text: [ASK_HELP[es ? "es" : "en"]] }));
   if (q.followUp && askLast) {
     const keep = { ...askLast };
     for (const k of Object.keys(q)) if (q[k] != null && q[k] !== false) keep[k] = q[k];
-    keep.es = q.es || askLast.es; q = keep;
+    q = keep;
   }
   askLast = q;
   const wantsDistance = q.near || q.place;
-  const thinking = wantsDistance && !q.place && !state.here ? askSay("bot", [q.es ? "Buscando tu ubicación…" : "Finding your location…"], [], "", true) : null;
+  const thinking = wantsDistance && !q.place && !state.here ? askBot(es => ({ text: [ASK_UI[es ? "es" : "en"].locating] })) : null;
   const origin = wantsDistance ? await askOrigin(q) : (state.here ? { ...state.here, label: null } : null);
-  if (thinking) thinking.remove();
+  if (thinking) { thinking.li.remove(); askBots.splice(askBots.indexOf(thinking), 1); }
   const from = wantsDistance ? origin : null;
-  let res = askPick(q, from), relaxed = "";
+  let res = askPick(q, from), relaxed = false;
   // Nothing fits: try again without the price filter before giving up, and say so
   if (!res.ranked.length && q.prices) {
     const loose = askPick({ ...q, prices: null }, from);
-    if (loose.ranked.length) {
-      res = loose;
-      relaxed = q.es ? `No hay opciones en ese rango de precio (${q.prices.join(", ")}), así que te muestro otras sin filtrar por precio.`
-        : `Nothing in that price range (${q.prices.join(", ")}), so here are options at any price.`;
-    }
+    if (loose.ranked.length) { res = loose; relaxed = true; }
   }
-  const a = askAnswer(q, origin, res);
-  if (relaxed) a.text.unshift(relaxed);
-  askSay("bot", a.text, a.cards, a.foot, false, a.chips);
+  askBot(es => {
+    const a = askAnswer(q, origin, res, es);
+    if (relaxed) a.text.unshift(es
+      ? `No hay opciones en ese rango de precio (${q.prices.join(", ")}), así que te muestro otras sin filtrar por precio.`
+      : `Nothing in that price range (${q.prices.join(", ")}), so here are options at any price.`);
+    return a;
+  });
 }
 
-function askSay(who, lines, cards = [], foot = "", temp = false, chips = []) {
-  const li = document.createElement("li");
-  li.className = `ask-msg ${who}${temp ? " temp" : ""}`;
-  li.innerHTML = lines.map(l => `<p>${esc(l)}</p>`).join("") +
+function askPaint(li, { text, cards = [], foot = "", chips = [] }) {
+  li.innerHTML = text.map(l => `<p>${esc(l)}</p>`).join("") +
     (cards.length ? `<ul class="ask-cards">${cards.join("")}</ul>` : "") +
     (foot ? `<p class="ask-foot">${esc(foot)}</p>` : "") +
     (chips.length ? `<div class="ask-chips">${chips.map(c => `<button type="button" class="chip" data-ask="${esc(c)}">${esc(c)}</button>`).join("")}</div>` : "");
+}
+function askAdd(li) {
   $("#ask-log").appendChild(li);
   $("#ask-log").scrollTop = $("#ask-log").scrollHeight;
-  return li;
+}
+function askBot(draw) {
+  const li = document.createElement("li");
+  li.className = "ask-msg bot";
+  const b = { li, draw };
+  askPaint(li, draw(askLang === "es"));
+  askBots.push(b); askAdd(li);
+  return b;
+}
+function askUser(text) {
+  const li = document.createElement("li");
+  li.className = "ask-msg user";
+  li.innerHTML = `<p>${esc(text)}</p>`;
+  askAdd(li);
+}
+
+// Put every label in the chosen language and redraw earlier answers
+function askSetLang(lang) {
+  askLang = lang;
+  try { localStorage.setItem("askLang", lang); } catch (e) {}
+  const u = ASK_UI[lang], es = lang === "es";
+  $("#ask-panel").lang = lang;
+  $("#ask-open").textContent = "💬 " + u.fab;
+  $("#ask-sub").textContent = u.sub;
+  $("#ask-input").placeholder = u.ph;
+  $("#ask-input").setAttribute("aria-label", u.label);
+  $("#ask-send").textContent = u.send;
+  $("#ask-lang").textContent = u.other;
+  $("#ask-lang").setAttribute("aria-label", u.otherLabel);
+  $("#ask-examples").innerHTML = ASK_EXAMPLES.map(e => `<button type="button" class="chip">${esc(e[es ? 1 : 0])}</button>`).join("");
+  askBots.forEach(b => askPaint(b.li, b.draw(es)));
 }
 
 function askSetup() {
-  const lang = (navigator.language || "en").startsWith("es") ? "es" : "en";
-  const examples = lang === "es"
-    ? ["¿Me puedes recomendar un restaurant de comida mexicana que esté a 10 minutos máximo caminando? Ojalá que tenga descuentos", "Algo barato cerca del MIT", "Happy hour en Back Bay"]
-    : ["Mexican food within a 10-minute walk, ideally with a deal", "Something cheap near MIT", "Happy hour in Back Bay"];
   document.body.insertAdjacentHTML("beforeend", `
-    <button type="button" class="ask-fab" id="ask-open" aria-haspopup="dialog" aria-controls="ask-panel">💬 ${lang === "es" ? "Pregúntame" : "Ask me"}</button>
+    <button type="button" class="ask-fab" id="ask-open" aria-haspopup="dialog" aria-controls="ask-panel"></button>
     <section class="ask-panel" id="ask-panel" role="dialog" aria-labelledby="ask-title" hidden>
-      <header class="ask-head"><div><h2 id="ask-title">Ask Boston Lifesaver</h2><p class="dlg-sub">${lang === "es" ? "Recomendaciones según la lista de esta página" : "Recommendations from the list on this page"}</p></div><button type="button" class="x" id="ask-close" aria-label="Close">×</button></header>
+      <header class="ask-head"><div><h2 id="ask-title">Ask Boston Lifesaver</h2><p class="dlg-sub" id="ask-sub"></p></div>
+        <div class="ask-tools"><button type="button" class="chip ask-lang" id="ask-lang"></button><button type="button" class="x" id="ask-close" aria-label="Close">×</button></div></header>
       <ul class="ask-log" id="ask-log" aria-live="polite"></ul>
-      <div class="ask-examples" id="ask-examples">${examples.map(e => `<button type="button" class="chip">${esc(e)}</button>`).join("")}</div>
-      <form class="ask-form" id="ask-form"><input id="ask-input" autocomplete="off" maxlength="300" placeholder="${lang === "es" ? "Ej.: sushi cerca de Kendall con descuento" : "E.g. sushi near Kendall with a deal"}" aria-label="${lang === "es" ? "Tu pregunta" : "Your question"}"><button class="btn primary" type="submit">${lang === "es" ? "Enviar" : "Send"}</button></form>
+      <div class="ask-examples" id="ask-examples"></div>
+      <form class="ask-form" id="ask-form"><input id="ask-input" autocomplete="off" maxlength="300"><button class="btn primary" type="submit" id="ask-send"></button></form>
     </section>`);
-  askSay("bot", [lang === "es"
-    ? "¡Hola! Te ayudo a elegir dónde comer. " + ASK_HELP.es
-    : "Hi! I can help you pick where to eat. " + ASK_HELP.en]);
+  askBot(es => ({ text: [es ? ASK_UI.es.hi + ASK_HELP.es : ASK_UI.en.hi + ASK_HELP.en] }));
+  askSetLang(askLang);
 
   const panel = $("#ask-panel"), open = $("#ask-open");
   const toggle = show => { panel.hidden = !show; open.hidden = show; if (show) $("#ask-input").focus(); else open.focus(); };
   open.addEventListener("click", () => toggle(true));
   $("#ask-close").addEventListener("click", () => toggle(false));
+  $("#ask-lang").addEventListener("click", () => askSetLang(askLang === "es" ? "en" : "es"));
   panel.addEventListener("keydown", e => { if (e.key === "Escape") toggle(false); });
   const send = text => {
     text = text.trim(); if (!text) return;
-    askSay("user", [text]);
+    askUser(text);
     $("#ask-examples").hidden = true;
     askHandle(text);
   };
