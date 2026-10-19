@@ -50,6 +50,12 @@ It only re-checks deals already in the table. **Finding new deals is still done 
 
 **See results:** GitHub → **Actions → Daily deals check** → open a run; the summary lists each deal. The **Run workflow** button runs it now. Locally, `node scripts/refresh-deals.js` does a dry run that writes nothing.
 
+### Finding new deals (Claude scheduled task, 7:15am)
+
+New deals are found by a Claude scheduled task in Barbara's Claude desktop app (no API cost; runs only when that Mac is on and the app is open, otherwise at the next opportunity). Each day it takes 1/7 of the open restaurants (`id % 7`, about 15), looks for current deals on their official sites, and adds what it finds as `sourced` through [`scripts/deal-scan.js`](../scripts/deal-scan.js). That helper checks the type, description length and URL, refuses closed restaurants and skips near-duplicates of a live deal. All 102 restaurants are covered every week.
+
+The task reads the secret key from `~/.config/boston-lifesaver/.env` (one line: `SUPABASE_SERVICE_ROLE_KEY=...`) on that Mac. Review what it added in **Table Editor → deals** (newest rows, status `sourced`); set wrong ones to `rejected`.
+
 GitHub turns off scheduled workflows after 60 days with no commits to the repo; if that happens, re-enable it from the Actions tab. Its daily read of the database also helps keep the free Supabase project from pausing.
 
 **Free-plan pausing:** free projects pause after about a week with little traffic. If that happens, the site falls back to the built-in list and sign-in/reviews stop working until the owner clicks **Resume project** in the dashboard.
